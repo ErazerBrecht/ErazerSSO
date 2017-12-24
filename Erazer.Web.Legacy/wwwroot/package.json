@@ -1,0 +1,14 @@
+{
+  "name": "Erazer.Web.Legacy",
+  "private": true,
+  "version": "1.0.0",
+  "devDependencies": {
+    "copyfiles": "^0.2.1"
+  },
+  "scripts": {
+	  "copy-landing": "copyfiles landing/*.* dist/",
+	  "copy-favicon": "copyfiles favicon.ico dist/",
+	  "build-portal": "cd portal & npm run build",
+    "build": "npm install & npm run copy-landing & npm run copy-favicon & npm run build-portal"
+  }
+}
