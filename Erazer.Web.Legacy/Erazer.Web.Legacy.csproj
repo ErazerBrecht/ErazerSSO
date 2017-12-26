@@ -2,18 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TypeScriptCompileBlocked>True</TypeScriptCompileBlocked>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="wwwroot\dist\**" />
-    <Compile Remove="wwwroot\portal\dist\**" />
-    <Content Remove="wwwroot\dist\**" />
-    <Content Remove="wwwroot\portal\dist\**" />
-    <EmbeddedResource Remove="wwwroot\dist\**" />
-    <EmbeddedResource Remove="wwwroot\portal\dist\**" />
-    <None Remove="wwwroot\dist\**" />
-    <None Remove="wwwroot\portal\dist\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="2.16.0" />

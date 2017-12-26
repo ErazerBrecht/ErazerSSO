@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Erazer.API
 {
@@ -19,6 +20,7 @@ namespace Erazer.API
         {
             services.AddMvcCore()
                 .AddAuthorization()
+                .AddCors()
                 .AddJsonFormatters();
 
             services.AddAuthentication("Bearer")
@@ -36,8 +38,10 @@ namespace Erazer.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromDays(1)));
             }
 
+            // TODO Add CORS in non dev env
             app.UseAuthentication();
             app.UseMvc();
         }

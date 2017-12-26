@@ -1,5 +1,6 @@
 import { IResult } from '../../models/result.models'
 import './home.style.scss';
+import { HomeService } from './home.service';
 
 export class HomeComponent implements ng.IComponentOptions {
     controller: ng.IControllerConstructor;
@@ -14,30 +15,11 @@ export class HomeComponent implements ng.IComponentOptions {
 class HomeController implements ng.IComponentController {
     results: Array<IResult>;
 
-    constructor() {
+    constructor(private homeService: HomeService) {
         "ngInject";
     }
 
     $onInit() {
-        this.results = [
-            {
-                id: 'AAAA',
-                subject: 'IOT',
-                score: '20/20',
-                remarks: 'Good job',
-                credits: 3,
-                added: new Date()
-            },
-            {
-                id: 'BBBB',
-                subject: 'C#',
-                score: '20/20',
-                remarks: 'Good job',
-                credits: 6,
-                added: new Date()
-            }
-        ]
+        this.homeService.getResults().then(r => this.results = r);
     }
-
-
 }

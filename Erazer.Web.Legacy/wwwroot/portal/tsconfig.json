@@ -9,8 +9,6 @@
     "noImplicitAny": false,
     "lib": ["es2015", "dom"]
   },
-  "files": [
-  ],
   "exclude": [
     "node_modules"
   ]

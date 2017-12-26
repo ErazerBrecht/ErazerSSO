@@ -1,6 +1,7 @@
 import * as angular from 'angular';
 import { StateProvider } from 'angular-ui-router';
 import { HomeComponent } from './home.component';
+import { HomeService } from './home.service';
 import { NavService, NavItem } from './../../common/nav/nav.service';
 
 function routeConfig($stateProvider: StateProvider,) {
@@ -31,4 +32,6 @@ export const Home: ng.IModule = angular
     ])
     .config(routeConfig)
     .run(runConfig)
-    .component('home', new HomeComponent);    
+    .service('homeService', HomeService)
+    .component('home', new HomeComponent);
+    
