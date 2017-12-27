@@ -1,5 +1,3 @@
-import { Ng1StateDeclaration } from 'angular-ui-router';
-
 export class FooterComponent implements ng.IComponentOptions {
     controller: ng.IControllerConstructor;
     template: string;

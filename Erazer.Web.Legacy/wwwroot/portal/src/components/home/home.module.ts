@@ -1,10 +1,10 @@
 import * as angular from 'angular';
-import { StateProvider } from 'angular-ui-router';
+import { IStateProvider } from 'angular-ui-router';
 import { HomeComponent } from './home.component';
 import { HomeService } from './home.service';
 import { NavService, NavItem } from './../../common/nav/nav.service';
 
-function routeConfig($stateProvider: StateProvider,) {
+function routeConfig($stateProvider: IStateProvider,) {
     "ngInject";
 
     $stateProvider

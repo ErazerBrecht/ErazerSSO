@@ -59,13 +59,13 @@ module.exports = function (env) {
       main: sourcePath + '/app.module.ts',
       vendor: [
         'angular/angular.js',
-        'angular-ui-router/release/angular-ui-router.js',
         'angular-aria/angular-aria.js',
         'angular-material/angular-material.js',
         'angular-messages/angular-messages.js',
         'angular-sanitize/angular-sanitize.js',
         'angular-animate/angular-animate.js',
-        'angular-material-data-table/dist/md-data-table.js'
+        'angular-material-data-table/dist/md-data-table.js',
+        '@uirouter/angularjs/release/angular-ui-router.js'
       ]
     },
     output: {

@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Erazer.API.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Erazer.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     public class ResultsController : Controller
     {
-        // GET api/values
+        // GET api/results
         [HttpGet]
         public IEnumerable<ResultViewModel> Get()
         {

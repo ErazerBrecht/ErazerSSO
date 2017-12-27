@@ -1,4 +1,3 @@
-import { StateProvider } from 'angular-ui-router';
 import * as angular from 'angular';
 import { FooterComponent } from './footer.component';
 

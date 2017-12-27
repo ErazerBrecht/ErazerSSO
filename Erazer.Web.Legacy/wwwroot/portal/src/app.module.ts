@@ -1,13 +1,14 @@
 import * as angular from 'angular';
-import { UrlRouterProvider, StateProvider } from 'angular-ui-router';
+import { IUrlRouterProvider, IStateProvider } from 'angular-ui-router';
 import { AppComponent } from './app.component';
+import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { ComponentsModule } from './components/components.module';
 
 import './app.scss';
 
 
-function routeConfig($locationProvider: ng.ILocationProvider, $urlRouterProvider: UrlRouterProvider, $stateProvider: StateProvider) {
+function routeConfig($locationProvider: ng.ILocationProvider, $urlRouterProvider: IUrlRouterProvider, $stateProvider: IStateProvider) {
     "ngInject";
 
     $stateProvider.state('app', {
@@ -34,6 +35,7 @@ export const App: ng.IModule = angular
         'ngAria',
         'ngAnimate',
         'md.data.table',
+        AuthModule.name,
         CommonModule.name,
         ComponentsModule.name
     ])

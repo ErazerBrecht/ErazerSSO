@@ -1,4 +1,3 @@
-import { Ng1StateDeclaration } from 'angular-ui-router';
 import { NavService, NavItem } from './nav.service';
 
 export class NavComponent implements ng.IComponentOptions {
