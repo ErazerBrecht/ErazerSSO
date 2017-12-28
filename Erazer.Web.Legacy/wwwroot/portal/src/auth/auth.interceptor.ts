@@ -11,12 +11,12 @@ interface IInterceptor {
 class AuthenticationInterceptor implements IInterceptor {
     public static $inject = ["$injector", "$q", "logger"];
 
-    public static Factory($injector: ng.auto.IInjectorService, $q: ng.IQService) {
+    public static Factory($injector: ng.auto.IInjectorService, $q: ng.IQService, $window: ng.IWindowService) {
         "ngInject";
-        return new AuthenticationInterceptor($injector, $q);
+        return new AuthenticationInterceptor($injector, $q, $window);
     }
 
-    constructor(private $injector: ng.auto.IInjectorService, private $q: ng.IQService) {
+    constructor(private $injector: ng.auto.IInjectorService, private $q: ng.IQService, private $window: ng.IWindowService) {
     }
 
     public request = (requestConfig: ng.IRequestConfig): ng.IRequestConfig => {
@@ -36,18 +36,30 @@ class AuthenticationInterceptor implements IInterceptor {
     public response = (responseSuccess): ng.IPromise<any> => {
         return responseSuccess;
     }
-    public responseError = (responseFailure): ng.IPromise<any> => {
+    public responseError = <T>(responseFailure: ng.IHttpPromiseCallbackArg<T>): ng.IPromise<any> => {
         if (responseFailure.status === 401) {
-            this.getTokenFromBackend();
+            const $http = this.$injector.get('$http');            
+            const deferred = this.$q.defer();
+            const promise = deferred.promise.then(() => $http(responseFailure.config))
+
+            this.getTokenFromBackend().then(() => {
+                console.log('Successfully retrieve a new access_token');                
+                console.log('Retrying original call');
+                deferred.resolve();
+             }, e => {
+                console.log('TODO Redirect to refresh the session');
+                console.log('For now redirect to landing page!');
+                this.$window.location.href = '/';
+             });
+
+             return promise;
         }
         return this.$q.reject(responseFailure);
     }
 
-    private getTokenFromBackend() {
+    private getTokenFromBackend(): ng.IPromise<void> {
         const authService = this.$injector.get('authService') as AuthService;
-        authService.getToken().then(
-            t => localStorage.setItem('token', t),
-            e => console.log(e));                       // TODO Redirect to REFRESH SESSION URL!
+        return authService.getToken().then(t => localStorage.setItem('token', t));                       
     }
 
     private getTokenFromLocalstorage() {

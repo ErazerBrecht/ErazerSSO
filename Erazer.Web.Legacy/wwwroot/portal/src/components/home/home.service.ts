@@ -11,8 +11,8 @@ export class HomeService {
     constructor(private $http: IHttpService) {
     }
 
-    getResults(): any{
+    getResults(): IPromise<IResult[]>{
         return this.$http.get(`${API_URL}/results`)
-            .then(response => response.data);
+            .then(response => response.data as IResult[]);
     }
 }

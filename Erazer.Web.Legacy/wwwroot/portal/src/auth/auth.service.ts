@@ -12,8 +12,8 @@ export class AuthService {
         this.BASE_URL = `${MVC_URL}/auth`;         
     }
 
-    getToken(): any{
+    getToken(): IPromise<string>{
         return this.$http.get(`${this.BASE_URL}/token`)
-            .then(response => response.data);
+            .then(response => response.data as string);
     }
 }
