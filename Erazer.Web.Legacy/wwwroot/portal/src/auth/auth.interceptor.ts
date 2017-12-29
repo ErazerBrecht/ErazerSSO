@@ -47,9 +47,8 @@ class AuthenticationInterceptor implements IInterceptor {
                 console.log('Retrying original call');
                 deferred.resolve();
              }, e => {
-                console.log('TODO Redirect to refresh the session');
-                console.log('For now redirect to landing page!');
-                this.$window.location.href = '/';
+                const dashboardUrl = `${this.$window.location.origin}/dashboard?returnRoute=${this.$window.location.hash}`;
+                this.$window.location.href = dashboardUrl;
              });
 
              return promise;

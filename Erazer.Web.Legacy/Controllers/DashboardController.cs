@@ -6,7 +6,7 @@ namespace Erazer.Web.Legacy.Controllers
     public class DashboardController : Controller
     {
 
-        // Dynamic Angular 1.X dashboard
+        // Dynamic AngularJS 1.X dashboard
         // Requires to be logged in!
         [Authorize]
         public IActionResult Index(string returnRoute)
@@ -14,7 +14,6 @@ namespace Erazer.Web.Legacy.Controllers
             if(string.IsNullOrEmpty(returnRoute))
                 return Redirect("/portal");
             return Redirect($"/portal/{returnRoute}");
-
         }
     }
 }

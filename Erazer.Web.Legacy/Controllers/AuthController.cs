@@ -24,6 +24,7 @@ namespace Erazer.Web.Legacy.Controllers
         [HttpGet("token")]
         public async Task<IActionResult> RequestNewToken()
         {
+            // User doesn't have a valid cookie anymore
             if (!User.Identity.IsAuthenticated)
                 return StatusCode(419);
 
@@ -41,8 +42,8 @@ namespace Erazer.Web.Legacy.Controllers
 
             // Try to refresh access token
             var tokenClient = new TokenClient($"{ssoUrl}/connect/token", clientId, clientSecret);
-            var rt = await HttpContext.GetTokenAsync(refreshTokenName);
-            var tokenResult = await tokenClient.RequestRefreshTokenAsync(rt);          
+            var refreshToken = await HttpContext.GetTokenAsync(refreshTokenName);
+            var tokenResult = await tokenClient.RequestRefreshTokenAsync(refreshToken);          
 
             // Refresh failed
             if (tokenResult.IsError)
@@ -51,7 +52,7 @@ namespace Erazer.Web.Legacy.Controllers
                 return StatusCode(419);
             }
 
-            // Save new (refreshed) tokens in Cookie
+            // Save new (refreshed) tokens in the cookie
             // Return ACCESS_TOKEN as JSON to client
             var newAccessToken = tokenResult.AccessToken;
             var newRefreshToken = tokenResult.RefreshToken;
