@@ -11,9 +11,10 @@ namespace Erazer.Web.Legacy.Controllers
         [Authorize]
         public IActionResult Index(string returnRoute)
         {
-            if(string.IsNullOrEmpty(returnRoute))
-                return Redirect("/portal");
-            return Redirect($"/portal/{returnRoute}");
+            if(!string.IsNullOrEmpty(returnRoute) && Url.IsLocalUrl(returnRoute))
+                return Redirect(returnRoute);
+
+            return Redirect("/portal");
         }
     }
 }

@@ -15,7 +15,7 @@ function routeConfig($locationProvider: ng.ILocationProvider, $urlRouterProvider
         redirectTo: 'app.home',
     });
 
-    //$locationProvider.html5Mode(true);
+    $locationProvider.html5Mode(true);
     $urlRouterProvider.otherwise('/');
 }
 

@@ -47,7 +47,7 @@ class AuthenticationInterceptor implements IInterceptor {
                 console.log('Retrying original call');
                 deferred.resolve();
              }, e => {
-                const dashboardUrl = `${this.$window.location.origin}/dashboard?returnRoute=${this.$window.location.hash}`;
+                const dashboardUrl = `${this.$window.location.origin}/dashboard?returnRoute=${this.$window.location.pathname}`;
                 this.$window.location.href = dashboardUrl;
              });
 

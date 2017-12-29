@@ -1,6 +1,7 @@
 ﻿using Erazer.Web.Legacy.Middleware.ProtectFolder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,7 +20,7 @@ namespace Erazer.Web.Legacy
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddMvc();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -74,6 +75,8 @@ namespace Erazer.Web.Legacy
                 PolicyName = "Authenticated"
             });
 
+
+            app.UseRewriter(new RewriteOptions().AddRewrite(@"^portal\/(\/(\w+))*\/?(\.\w{5,})?\??([^.]+)?$", "portal/index.html", skipRemainingRules: true));
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseAuthentication();
