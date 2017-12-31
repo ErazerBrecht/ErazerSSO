@@ -1,14 +1,26 @@
 const webpack = require('webpack');
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlReplaceWebpackPlugin = require('html-replace-webpack-plugin');
 
 const sourcePath = path.join(__dirname, './src');
-const destPathDev = path.join(__dirname, './dist/');
-const destPathProd = path.join(__dirname, '../dist/portal/');
-
+const destPathLocal = path.join(__dirname, './dist/');
+const destPathServer = path.join(__dirname, '../dist/portal/');
 
 module.exports = function (env) {
-  const nodeEnv = env && env.prod ? 'production' : 'development';
-  const isProd = nodeEnv === 'production';
+  let nodeEnv = 'development';
+  let isProd = false;
+  let isServer = false;
+  let isLocal = false;
+
+  if (env && env.prod){
+    isProd = true;
+    nodeEnv = 'production';
+  }
+  else if (env && env.server)
+    isServer = true;
+  else
+    isLocal = true;
 
   const plugins = [
     new webpack.optimize.CommonsChunkPlugin({
@@ -44,11 +56,58 @@ module.exports = function (env) {
         output: {
           comments: false,
         },
+      }),
+      new HtmlWebpackPlugin(
+        {
+          filename: 'index.html',
+          template: './index.html',
+          inject: false,
+          minify: false,                    // TODO Enable this!
+          chunks: 'all',
+          chunksSortMode: 'auto'
+        }),
+      new HtmlReplaceWebpackPlugin(
+        {
+          pattern: '@@baseUrl',
+          replacement: '"/portal/"'
+        })
+    );
+  } else if (isServer) {
+    plugins.push(
+      new webpack.LoaderOptionsPlugin({
+        minimize: true,
+        debug: false
+      }),
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: './index.html',
+        inject: false,
+        minify: false,
+        chunks: 'all',
+        chunksSortMode: 'auto'
+      }),
+      new HtmlReplaceWebpackPlugin({
+        pattern: '@@baseUrl',
+        replacement: '"/portal/"'
       })
     );
   } else {
     plugins.push(
-      new webpack.HotModuleReplacementPlugin()
+      new webpack.HotModuleReplacementPlugin(),
+      new HtmlWebpackPlugin(
+        {
+          filename: 'index.html',
+          template: './index.html',
+          inject: false,
+          minify: false,
+          chunks: 'all',
+          chunksSortMode: 'auto'
+        }),
+      new HtmlReplaceWebpackPlugin(
+        {
+          pattern: '@@baseUrl',
+          replacement: '"/"'
+        })
     );
   }
 
@@ -56,7 +115,7 @@ module.exports = function (env) {
     devtool: isProd ? 'source-map' : 'eval',
     context: sourcePath,
     entry: {
-      main: sourcePath + '/app.module.ts',
+      main: sourcePath + '/app/app.module.ts',
       vendor: [
         'angular/angular.js',
         'angular-aria/angular-aria.js',
@@ -69,7 +128,7 @@ module.exports = function (env) {
       ]
     },
     output: {
-      path: isProd ? destPathProd : destPathDev,
+      path: isProd || isServer ? destPathServer : destPathLocal,
       publicPath: '/dist/',
       filename: '[name].bundle.js',
     },
@@ -129,8 +188,7 @@ module.exports = function (env) {
     },
 
     devServer: {
-      contentBase: './',
-      publicPath: '/dist/',
+      contentBase: 'dist/',
       historyApiFallback: true,
       port: 3000,
       compress: isProd,

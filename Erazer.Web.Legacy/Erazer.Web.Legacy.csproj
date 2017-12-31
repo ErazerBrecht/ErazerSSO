@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Update="wwwroot\**\*">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+    <Content Remove="wwwroot\dist\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IdentityModel" Version="2.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
@@ -14,5 +21,15 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
   </ItemGroup>
+
+  <Target Name="BeforePublishScript" BeforeTargets="PrepareForPublish">
+    <Exec Command="npm run publish --prefix wwwroot" />
+
+    <ItemGroup>
+      <Dist Include="wwwroot/dist/**" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(Dist)" DestinationFolder="$(PublishDir)\wwwroot\dist\%(RecursiveDir)" />
+  </Target>
 
 </Project>

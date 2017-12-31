@@ -6,8 +6,8 @@
   "devDependencies": {
     "@types/angular": "^1.6.7",
     "@types/angular-animate": "^1.5.9",
-    "@types/angular-ui-router": "^1.1.36",
     "@types/angular-material": "^1.1.57",
+    "@types/angular-ui-router": "^1.1.36",
     "@types/jquery": "^2.0.40",
     "@types/node": "^7.0.8",
     "awesome-typescript-loader": "^3.1.2",
@@ -15,6 +15,8 @@
     "cross-env": "^3.2.3",
     "css-loader": "^0.23.1",
     "html-loader": "^0.4.5",
+    "html-replace-webpack-plugin": "^2.2.8",
+    "html-webpack-plugin": "^2.30.1",
     "ng-annotate-loader": "^0.2.0",
     "node-sass": "^4.5.0",
     "rimraf": "^2.5.2",
@@ -37,9 +39,9 @@
   },
   "scripts": {
     "prestart": "npm install",
-    "start": "webpack-dev-server",
-    "build": "webpack",
+    "start": "copyfiles -f index.html ./dist/ & webpack-dev-server",
+    "build": "webpack --env.server=true",
     "webpack-prod": "cross-env NODE_ENV=production webpack --env.prod=true",
-    "publish": "copyfiles -f src/index.html ../dist/portal & copyfiles -f src/assets/* ../dist/portal/assets & npm run webpack-prod"
+    "publish": "npm install & copyfiles -f index.html ../dist/portal & copyfiles -f src/assets/* ../dist/portal/assets & npm run webpack-prod"
   }
 }

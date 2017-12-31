@@ -1,4 +1,5 @@
-﻿using Erazer.Web.Legacy.Middleware.ProtectFolder;
+﻿using Erazer.Web.Legacy.Extensions;
+using Erazer.Web.Legacy.Middleware.ProtectFolder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Rewrite;
@@ -69,16 +70,7 @@ namespace Erazer.Web.Legacy
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseProtectFolder(new ProtectFolderOptions
-            {
-                Path = "/Portal",
-                PolicyName = "Authenticated"
-            });
-
-
-            app.UseRewriter(new RewriteOptions().AddRewrite(@"^portal\/(\/(\w+))*\/?(\.\w{5,})?\??([^.]+)?$", "portal/index.html", skipRemainingRules: true));
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.UseCustomStaticFiles(env);
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
         }

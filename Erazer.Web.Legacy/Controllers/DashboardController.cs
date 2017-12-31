@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erazer.Web.Legacy.Controllers
 {
+    /// <summary>
+    /// This controller is used to serve the non-public pages (the actual business application)
+    /// </summary>
+    [Authorize]
     public class DashboardController : Controller
     {
-
-        // Dynamic AngularJS 1.X dashboard
-        // Requires to be logged in!
-        [Authorize]
         public IActionResult Index(string returnRoute)
         {
-            if(!string.IsNullOrEmpty(returnRoute) && Url.IsLocalUrl(returnRoute))
+            if (!string.IsNullOrEmpty(returnRoute) && Url.IsLocalUrl(returnRoute))
                 return Redirect(returnRoute);
 
             return Redirect("/portal");

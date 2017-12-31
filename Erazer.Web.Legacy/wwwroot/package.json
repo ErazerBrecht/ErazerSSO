@@ -3,12 +3,16 @@
   "private": true,
   "version": "1.0.0",
   "devDependencies": {
-    "copyfiles": "^0.2.1"
+    "copyfiles": "^0.2.1",
+    "rimraf": "^2.5.2"
   },
   "scripts": {
-	  "copy-landing": "copyfiles landing/*.* dist/",
-	  "copy-favicon": "copyfiles favicon.ico dist/",
-	  "build-portal": "cd portal & npm run build",
-    "build": "npm install & npm run copy-landing & npm run copy-favicon & npm run build-portal"
+	"preclean": "rimraf dist/*",
+	"copy-landing": "copyfiles landing/*.* dist/",
+	"copy-favicon": "copyfiles favicon.ico dist/",
+	"build-portal": "cd portal & npm run build",
+	"publish-portal": "cd portal & npm run publish ",
+	"build": "npm install & npm run preclean & npm run copy-landing & npm run copy-favicon & npm run build-portal",
+	"publish": "npm install & npm run preclean & npm run copy-landing & npm run copy-favicon & npm run publish-portal"
   }
 }
