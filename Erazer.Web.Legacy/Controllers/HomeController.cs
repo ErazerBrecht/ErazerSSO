@@ -7,6 +7,8 @@ namespace Erazer.Web.Legacy.Controllers
         // Static landing page
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+                return Redirect("/dashboard");
             return Redirect("/landing");
         }
     }
