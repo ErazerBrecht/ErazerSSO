@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using IdentityServer4.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Erazer_Authorization
 {
@@ -24,6 +26,10 @@ namespace Erazer_Authorization
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // TODO ADD AS ENV VARIABLE!
+            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=ErazerSSO.IdentityServer;trusted_connection=yes;";
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
             services.AddMvc();
 
             services.Configure<IISOptions>(options =>
@@ -38,10 +44,16 @@ namespace Erazer_Authorization
                 options.Authentication.CookieSlidingExpiration = true;
                 options.Authentication.CheckSessionCookieName = "Erazer.SSO.Idsr";
 
+                //TODO Check if I don't have to disable them in non-dev environment
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+            }).AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = dbBuilder =>
+                    dbBuilder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                options.EnableTokenCleanup = true;
             });
  
             builder.AddInMemoryIdentityResources(Config.GetIdentityResources());
