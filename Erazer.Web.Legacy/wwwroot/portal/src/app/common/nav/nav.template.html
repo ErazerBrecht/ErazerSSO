@@ -1,3 +1,5 @@
 <md-toolbar layout="row" class="md-toolbar-tools">
 	<md-button ng-repeat="page in $ctrl.pages" ui-sref="{{page.state}}">{{ page.label }}</md-button>
+	<span flex></span>
+	<md-button ng-href="/logout">Logout</md-button>
 </md-toolbar>

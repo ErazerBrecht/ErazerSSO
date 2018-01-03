@@ -188,7 +188,7 @@ module.exports = function (env) {
     },
 
     devServer: {
-      contentBase: 'dist/',
+      publicPath: '/',
       historyApiFallback: true,
       port: 3000,
       compress: isProd,
