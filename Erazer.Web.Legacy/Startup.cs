@@ -1,8 +1,6 @@
 ﻿using Erazer.Web.Legacy.Extensions;
-using Erazer.Web.Legacy.Middleware.ProtectFolder;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,18 +10,25 @@ namespace Erazer.Web.Legacy
 {
     public class Startup
     {
+        // Abstraction of key-value application settings!
+        private IConfiguration _configuration;
+        // Path (staticfiles) that will be secured!
+        private const string SecuredStaticFilePath = "/portal";
+        // Name of policy that is required to access secured path
+        private const string SecuredStaticFilePolicyName = "AccessToSecuredFiles";
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         { 
             services.AddMvc();
 
+            #region AuthenticationServices
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             services.AddAuthentication(options =>
@@ -52,9 +57,9 @@ namespace Erazer.Web.Legacy
                 });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Authenticated", policy => policy.RequireAuthenticatedUser());
+                options.AddPolicy(SecuredStaticFilePolicyName, policy => policy.RequireAuthenticatedUser());
             });
-
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,8 +75,8 @@ namespace Erazer.Web.Legacy
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseCustomStaticFiles(env);
             app.UseAuthentication();
+            app.UseCustomStaticFiles(SecuredStaticFilePath, SecuredStaticFilePolicyName);
             app.UseMvcWithDefaultRoute();
         }
     }

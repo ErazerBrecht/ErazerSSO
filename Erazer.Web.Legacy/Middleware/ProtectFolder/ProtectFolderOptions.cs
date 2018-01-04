@@ -4,7 +4,12 @@ namespace Erazer.Web.Legacy.Middleware.ProtectFolder
 {
     public class ProtectFolderOptions
     {
-        public PathString Path { get; set; }
-        public string PolicyName { get; set; }
+        public ProtectFolderOptions(PathString path, string policyName)
+        {
+            Path = path;
+            PolicyName = policyName;
+        }
+        public PathString Path { get; }
+        public string PolicyName { get; }
     }
 }

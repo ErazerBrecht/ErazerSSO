@@ -23,11 +23,9 @@ namespace Erazer.Web.Legacy.Middleware.ProtectFolder
 
         public async Task Invoke(HttpContext httpContext, IAuthorizationService authorizationService)
         {
-   
             if (httpContext.Request.Path.StartsWithSegments(_path))
-            {         
-                var authentication = await httpContext.AuthenticateAsync("Cookies");
-                var authorization = await authorizationService.AuthorizeAsync(authentication.Principal, null, _policyName);
+            {          
+                var authorization = await authorizationService.AuthorizeAsync(httpContext.User, null, _policyName);
 
                 if (!authorization.Succeeded)
                 {
