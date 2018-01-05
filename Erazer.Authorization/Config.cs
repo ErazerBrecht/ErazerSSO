@@ -35,7 +35,7 @@ namespace Erazer_Authorization
                 new Client
                 {
                     ClientId = "legacy",
-                    ClientName = "Legacy MVC Client (AngularJS 1.X)",
+                    ClientName = "ErazerSSO Legacy",
 
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Hybrid,
