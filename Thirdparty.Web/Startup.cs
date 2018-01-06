@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
@@ -11,36 +7,30 @@ using Microsoft.Extensions.DependencyInjection;
 using Thirdparty.Web.Data;
 using Thirdparty.Web.Models;
 using Thirdparty.Web.Services;
+using Thirdparty.Web.Extensions;
 
 namespace Thirdparty.Web
 {
     public class Startup
     {
+        private IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication().AddOpenIdConnect("ErazerSSO", options =>
-            {
-                options.Authority = "http://localhost:5000";
-                options.ResponseType = "code";
-                options.RequireHttpsMetadata = false;
-                options.ClientId = "thirdparty";
-                options.ClientSecret = "EC095F67-66AB-40E5-A140-6E4806194CD9";
-            });
+            services.AddAuthentication().AddErazerSSO();
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
@@ -63,9 +53,7 @@ namespace Thirdparty.Web
             }
 
             app.UseStaticFiles();
-
             app.UseAuthentication();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
