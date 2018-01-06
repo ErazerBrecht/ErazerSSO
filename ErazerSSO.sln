@@ -9,7 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Erazer.Web", "Erazer.Web", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erazer.API", "Erazer.API\Erazer.API.csproj", "{0FF65609-2803-4A53-868F-05EC93352CB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erazer.Web.Legacy", "Erazer.Web.Legacy\Erazer.Web.Legacy.csproj", "{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erazer.Web.Legacy", "Erazer.Web.Legacy\Erazer.Web.Legacy.csproj", "{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Thirdparty.Web", "Thirdparty.Web\Thirdparty.Web.csproj", "{3BE506A7-9A6E-4C9C-AF82-21B4E2F69568}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE506A7-9A6E-4C9C-AF82-21B4E2F69568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE506A7-9A6E-4C9C-AF82-21B4E2F69568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE506A7-9A6E-4C9C-AF82-21B4E2F69568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE506A7-9A6E-4C9C-AF82-21B4E2F69568}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -75,7 +75,23 @@ namespace Erazer_Authorization
                     AllowedCorsOrigins = { "http://localhost:5002" },
 
                     AllowedScopes = { "openid", "profile", "api1" }
-                }
+                },
+
+                new Client
+                {
+                    ClientId = "thirdparty",
+                    ClientName = "Thirdparty",
+
+                    RequireConsent = true,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    ClientSecrets = { new Secret("EC095F67-66AB-40E5-A140-6E4806194CD9".Sha256()) },
+
+                    RedirectUris = { "http://localhost:9999/signin-oidc" },
+                    FrontChannelLogoutUri = "http://localhost:9999/signout-oidc",
+                    PostLogoutRedirectUris = { "http://localhost:9999/signout-callback-oidc" },
+
+                    AllowedScopes = { "openid", "profile" }
+                },
             };
         }
     }
