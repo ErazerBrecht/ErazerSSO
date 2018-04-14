@@ -56,23 +56,15 @@ namespace Erazer_Authorization
                 // SPA client using implicit flow
                 new Client
                 {
-                    ClientId = "spa",
-                    ClientName = "SPA Client",
-                    ClientUri = "http://identityserver.io",
+                    ClientId = "nodejs",
+                    ClientName = "ErazerSSO nodejs",
+                    
+                    RequireConsent = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    ClientSecrets = { new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256()) },
 
-                    AllowedGrantTypes = GrantTypes.Implicit,
-                    AllowAccessTokensViaBrowser = true,
-
-                    RedirectUris =
-                    {
-                        "http://localhost:5002/index.html",
-                        "http://localhost:5002/callback.html",
-                        "http://localhost:5002/silent.html",
-                        "http://localhost:5002/popup.html",
-                    },
-
-                    PostLogoutRedirectUris = { "http://localhost:5002/index.html" },
-                    AllowedCorsOrigins = { "http://localhost:5002" },
+                    RedirectUris = { "http://localhost:8888/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:8888" },
 
                     AllowedScopes = { "openid", "profile", "api1" }
                 },

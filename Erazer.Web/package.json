@@ -1,0 +1,25 @@
+{
+  "name": "erazer.web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "body-parser": "*",
+    "connect-flash": "*",
+    "cookie-parser": "*",
+    "express": "4.13.3",
+    "express-session": "*",
+    "method-override": "*",
+    "mongoose": "*",
+    "morgan": "*",
+    "openid-client": "*",
+    "passport": "*",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
