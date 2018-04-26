@@ -1,0 +1,8 @@
+{
+    "private": true,
+    "name": "clients",
+    "workspaces": [
+      "landing"
+    ]
+  }
+  
