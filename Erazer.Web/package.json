@@ -37,6 +37,9 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "release-landing": "cd client_apps/landing && npm run release",
+    "release-portal": "cd client_apps/portal && npm run release",
+    "release": "npm run release-landing && npm run release-portal",
     "transpile:bootstrap": "node node_modules/babel-cli/bin/babel.js node_modules/@ng-bootstrap/ng-bootstrap --out-dir node_modules/@ng-bootstrap/ng-bootstrap --presets es2015",
     "postinstall": "npm run transpile:bootstrap"
   },

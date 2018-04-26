@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "publish": "ng build --prod && ng build --prod --app universal --output-hashing=none",
+    "release": "ng build --prod && ng build --prod --app universal --output-hashing=none",
     "lint": "ng lint"
   },
   "dependencies": {
