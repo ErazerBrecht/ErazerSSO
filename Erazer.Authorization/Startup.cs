@@ -74,6 +74,7 @@ namespace Erazer.Authorization
         {
             if (Environment.IsDevelopment())
             {
+                app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
                 app.UseDeveloperExceptionPage();
             }
 

@@ -53,7 +53,7 @@ namespace Erazer_Authorization
                     AllowedScopes = { "openid", "profile", "api1" }
                 },
 
-                // SPA client using implicit flow
+                // New client (NodeJS + Angular) using 'code authorization'
                 new Client
                 {
                     ClientId = "nodejs",
@@ -68,7 +68,17 @@ namespace Erazer_Authorization
 
                     AllowedScopes = { "openid", "profile", "api1" }
                 },
+                new Client
+                {
+                    ClientId = "nodejs_dev",
+                    ClientName = "ErazerSSO nodejs_dev",
 
+                    RequireConsent = false,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    ClientSecrets = { new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256()) },
+
+                    AllowedScopes = { "openid", "profile", "api1" }
+                },
                 new Client
                 {
                     ClientId = "thirdparty",

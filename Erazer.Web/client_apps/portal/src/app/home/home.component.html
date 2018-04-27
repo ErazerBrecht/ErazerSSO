@@ -2,4 +2,23 @@
   <h1>
     Portal
   </h1>
- </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Score</th>
+        <th>Credits</th>
+        <th>Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let result of results | async">
+        <td>{{result.subject}}</td>
+        <td>{{result.score}}</td>
+        <td>{{result.credits}}</td>
+        <td>{{result.remarks}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

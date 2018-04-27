@@ -3,8 +3,14 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+// IMPORTANT: In a real environment the secret values (password & client_secret) would be loaded by dotenv or something similiar!!
+// They shouldn't be commited into vcs!!
 export const environment = {
-  production: false
+  production: false, 
+  username: 'alice',                
+  password: 'alice',                
+  client_id: 'nodejs_dev',
+  client_secret: '425A4639-4079-49E1-9F86-E832F246F5FB'
 };
 
 /*

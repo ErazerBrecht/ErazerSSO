@@ -76,7 +76,7 @@ async function addOidc() {
 function addAuth(oidc) {
     const params = {
         redirect_uri: 'http://localhost:8888/signin-oidc',
-        scope: 'openid profile'
+        scope: 'openid profile api1'
     }
 
     passport.serializeUser(function (user, done) {
