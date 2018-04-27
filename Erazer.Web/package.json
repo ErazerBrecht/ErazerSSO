@@ -22,17 +22,17 @@
     "connect-redis": "^3.3.3",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
+    "jw-bootstrap-switch-ng2": "^1.0.10",
     "mime": "^2.3.1",
     "morgan": "*",
+    "ng2-nouislider": "^1.7.7",
+    "nouislider": "9.2.0",
     "openid-client": "*",
     "passport": "*",
     "rxjs": "^5.5.2",
     "spdy": "^3.4.7",
     "url": "^0.11.0",
-    "zone.js": "^0.8.26",
-    "ng2-nouislider": "^1.7.7",
-    "nouislider": "9.2.0",
-    "jw-bootstrap-switch-ng2": "^1.0.10"
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {},
   "scripts": {

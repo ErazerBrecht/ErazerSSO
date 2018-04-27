@@ -26,6 +26,7 @@ module.exports = new Promise(async (resolve, reject) => {
     app.use(session({
         store: new redisStore({ host: 'localhost', port: '6380' }),
         secret: 'tutorialsecret',
+        cookie: { maxAge: 3600000 },
         resave: false,
         saveUninitialized: false
     }));
@@ -88,13 +89,6 @@ function addAuth(oidc) {
     });
 
     passport.use('oidc', new Strategy({ client: oidc.client, params }, (tokenset, userinfo, done) => {
-        console.log('tokenset', tokenset);
-        console.log('access_token', tokenset.access_token);
-        console.log('id_token', tokenset.id_token);
-        console.log('claims', tokenset.claims);
-        console.log('userinfo', userinfo);
-        console.log('sub', tokenset.claims.sub);
-
         const user = { id: tokenset.claims.sub, name: userinfo.name, access_token: tokenset.access_token, id_token: tokenset.id_token };
         return done(null, user);
     }));
@@ -112,9 +106,30 @@ function addAuth(oidc) {
         })));
     });
 
-    app.get('/dashboard', passport.authenticate('oidc'));
-    app.get('/signin-oidc', passport.authenticate('oidc', { successRedirect: '/portal', failureRedirect: '/' }));
-    
+    app.get('/dashboard', (req, res) => {
+        if (req.user) {
+            res.redirect('/portal');
+        }
+        else {
+            if (req.query.redirect)
+                passport.authenticate('oidc', { state: req.query.redirect })(req, res);
+            else
+                passport.authenticate('oidc')(req, res);
+        }
+    });
+
+    app.get('/signin-oidc', (req, res) => {
+        let successRedirect = '/portal';
+ 
+        // TODO ASK KIERAN IF SECURE
+        if (req.query.state && !req.query.state.includes('-'))
+            successRedirect += req.query.state;
+
+        console.log(successRedirect);
+
+        passport.authenticate('oidc', { successRedirect, failureRedirect: '/' })(req, res);
+    });
+
     app.get('/token', (req, res) => {
         if (!req.user) {
             res.send(401);
@@ -123,13 +138,13 @@ function addAuth(oidc) {
     });
 }
 
-function redirectMiddleware(req, res, next) {;
-    if (req.url.startsWith('/portal'))
-    {
+function redirectMiddleware(req, res, next) {
+    ;
+    if (req.url.startsWith('/portal')) {
         if (!req.user)
             return res.redirect('/');
         if (!req.url.includes('.'))
-            return res.sendFile('portal/index.html', {root: wwwroot});
+            return res.sendFile('portal/index.html', { root: wwwroot });
     }
     else if (req.url === '/' && req.user)
         return res.redirect('/portal');

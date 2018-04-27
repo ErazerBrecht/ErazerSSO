@@ -59,6 +59,9 @@ namespace Erazer_Authorization
                     ClientId = "nodejs",
                     ClientName = "ErazerSSO nodejs",
                     
+                    AccessTokenLifetime = 3600,
+                    AllowOfflineAccess = false,
+
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = { new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256()) },
@@ -72,6 +75,9 @@ namespace Erazer_Authorization
                 {
                     ClientId = "nodejs_dev",
                     ClientName = "ErazerSSO nodejs_dev",
+
+                    AccessTokenLifetime = (int) TimeSpan.FromDays(7).TotalSeconds,
+                    AllowOfflineAccess = false,
 
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
