@@ -35,8 +35,6 @@ module.exports = new Promise(async (resolve, reject) => {
     app.use(passport.session());
 
     app.use(redirectMiddleware);
-    app.get('/', angularRouter);
-    app.get('/profile', angularRouter);
 
     app.use(express.static(wwwroot, {
         setHeaders: function (res, path) {
@@ -76,7 +74,7 @@ async function addOidc() {
 
 function addAuth(oidc) {
     const params = {
-        redirect_uri: 'http://localhost:8888/signin-oidc',
+        redirect_uri: 'http://localhost:8888/auth/signin-oidc',
         scope: 'openid profile api1'
     }
 
@@ -93,7 +91,7 @@ function addAuth(oidc) {
         return done(null, user);
     }));
 
-    app.get('/logout', (req, res) => {
+    app.get('/auth/logout', (req, res) => {
         const idToken = req.user.id_token;
 
         req.logout();
@@ -106,31 +104,32 @@ function addAuth(oidc) {
         })));
     });
 
-    app.get('/dashboard', (req, res) => {
+    app.get('/auth/dashboard', (req, res, next) => {
         if (req.user) {
-            res.redirect('/portal');
+            if (req.query.redirect)
+                res.redirect(`/portal${req.query.redirect}`);            
+            else 
+                res.redirect('/portal/');
         }
         else {
             if (req.query.redirect)
-                passport.authenticate('oidc', { state: req.query.redirect })(req, res);
+                passport.authenticate('oidc', { state: req.query.redirect })(req, res, next);
             else
-                passport.authenticate('oidc')(req, res);
+                passport.authenticate('oidc')(req, res, next);
         }
     });
 
-    app.get('/signin-oidc', (req, res) => {
-        let successRedirect = '/portal';
- 
+    app.get('/auth/signin-oidc', (req, res) => {
+        let successRedirect = '/auth/dashboard';
+
         // TODO ASK KIERAN IF SECURE
         if (req.query.state && !req.query.state.includes('-'))
-            successRedirect += req.query.state;
-
-        console.log(successRedirect);
+            successRedirect += `?redirect=${req.query.state}`;
 
         passport.authenticate('oidc', { successRedirect, failureRedirect: '/' })(req, res);
     });
 
-    app.get('/token', (req, res) => {
+    app.get('/auth/token', (req, res) => {
         if (!req.user) {
             res.send(401);
         }
@@ -139,17 +138,24 @@ function addAuth(oidc) {
 }
 
 function redirectMiddleware(req, res, next) {
-    ;
+    if (req.url === '/') {
+        if (req.user)
+            return res.redirect('/portal/');
+        return angularRouter(req, res);
+    }
+
     if (req.url.startsWith('/portal')) {
         if (!req.user)
             return res.redirect('/');
         if (!req.url.includes('.'))
             return res.sendFile('portal/index.html', { root: wwwroot });
     }
-    else if (req.url === '/' && req.user)
-        return res.redirect('/portal');
 
-    next();
+    // Execute 'normal' express code if url is auth endpoint or a static file
+    if (req.url.startsWith('/auth') || req.url.includes('.'))
+        return next();
+
+    return angularRouter(req, res);
 }
 
 function angularRouter(req, res) {

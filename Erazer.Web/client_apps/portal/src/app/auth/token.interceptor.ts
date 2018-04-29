@@ -20,7 +20,7 @@ export class TokenInterceptor implements HttpInterceptor {
         }
         else
         {
-            window.location.href = `/dashboard?redirect=${this.router.url}`;
+            window.location.href = `/auth/dashboard?redirect=${this.router.url}`;
             return throwError('Redirecting!!');   
         }
     }

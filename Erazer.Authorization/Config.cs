@@ -66,7 +66,7 @@ namespace Erazer_Authorization
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = { new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256()) },
 
-                    RedirectUris = { "http://localhost:8888/signin-oidc" },
+                    RedirectUris = { "http://localhost:8888/auth/signin-oidc" },
                     PostLogoutRedirectUris = { "http://localhost:8888" },
 
                     AllowedScopes = { "openid", "profile", "api1" }

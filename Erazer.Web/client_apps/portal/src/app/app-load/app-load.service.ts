@@ -32,7 +32,7 @@ export class AppLoadService {
     }
 
     return this.http
-      .get<string>('/token')
+      .get<string>('/auth/token')
       .toPromise()
       .then((data: any) => this.saveToken(data))
       .catch((err: any) => Promise.resolve());
