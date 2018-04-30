@@ -1,0 +1,13 @@
+.dockerignore
+.env
+.git
+.gitignore
+.vs
+.vscode
+docker-compose.yml
+docker-compose.*.yml
+*/bin
+*/obj
+Erazer.Web/node_modules
+Erazer.Web/client_apps/portal/node_modules
+Erazer.Web/client_apps/landing/node_modules

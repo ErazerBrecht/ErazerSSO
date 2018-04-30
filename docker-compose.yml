@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  erazer.sso.web:
+    image: ${DOCKER_REGISTRY}erazerssoweb
+    build:
+      context: .
+      dockerfile: Erazer.Web/Dockerfile
