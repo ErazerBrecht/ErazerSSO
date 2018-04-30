@@ -6,7 +6,7 @@ const express = require('express');
 const app = express();
 
 const ngUniversal = require('@nguniversal/express-engine');
-const appServer = require('./wwwroot/landing-server/main.bundle');
+const appServer = require('./wwwroot/landing-server/main');
 
 const compression = require('compression');
 const morgan = require('morgan');

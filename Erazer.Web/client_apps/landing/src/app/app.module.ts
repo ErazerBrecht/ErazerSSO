@@ -25,7 +25,7 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   imports: [
     BrowserModule,
-    BrowserModule.withServerTransition({ appId: 'universal' }),
+    BrowserModule.withServerTransition({ appId: 'my-app' }),
     BrowserTransferStateModule,
     NgbModule.forRoot(),
     FormsModule,
