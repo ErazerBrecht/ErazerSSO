@@ -16,15 +16,21 @@ const redisStore = require('connect-redis')(session);
 const passport = require('passport');
 const { Issuer, Strategy } = require('openid-client');
 const url = require('url');
+const nconf = require('nconf');
 
 const wwwroot = __dirname + '/wwwroot';
+
+nconf
+    .argv()
+    .env()
+    .file({ file: 'config.json' });
 
 module.exports = new Promise(async (resolve, reject) => {
     app.use(morgan('dev'));
     app.use(compression());
 
     app.use(session({
-        store: new redisStore({ host: 'localhost', port: '6380' }),
+        store: new redisStore({ host: nconf.get('host'), port: '6380' }),
         secret: 'tutorialsecret',
         cookie: { maxAge: 3600000 },
         resave: false,
@@ -66,7 +72,7 @@ module.exports = new Promise(async (resolve, reject) => {
 
 
 async function addOidc() {
-    const issuer = await Issuer.discover('http://localhost:5000');
+    const issuer = await Issuer.discover(`http://${nconf.get('host')}:5000`);
     const client = new issuer.Client({ client_id: 'nodejs', client_secret: 'C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C' });
 
     return { issuer, client };
@@ -74,7 +80,7 @@ async function addOidc() {
 
 function addAuth(oidc) {
     const params = {
-        redirect_uri: 'http://localhost:8888/auth/signin-oidc',
+        redirect_uri: `http://${nconf.get('host')}:8888/auth/signin-oidc`,
         scope: 'openid profile api1'
     }
 
@@ -93,13 +99,14 @@ function addAuth(oidc) {
 
     app.get('/auth/logout', (req, res) => {
         const idToken = req.user.id_token;
+        const logoutUrl = oidc.issuer.end_session_endpoint;
 
         req.logout();
-        res.redirect(url.format(Object.assign(url.parse(oidc.issuer.end_session_endpoint), {
+        res.redirect(url.format(Object.assign(url.parse(logoutUrl), {
             search: null,
             query: {
                 id_token_hint: idToken,
-                post_logout_redirect_uri: 'http://localhost:8888'
+                post_logout_redirect_uri: `http://${nconf.get('host')}:8888`
             },
         })));
     });
@@ -107,8 +114,8 @@ function addAuth(oidc) {
     app.get('/auth/dashboard', (req, res, next) => {
         if (req.user) {
             if (req.query.redirect)
-                res.redirect(`/portal${req.query.redirect}`);            
-            else 
+                res.redirect(`/portal${req.query.redirect}`);
+            else
                 res.redirect('/portal/');
         }
         else {

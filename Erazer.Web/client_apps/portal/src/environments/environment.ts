@@ -7,6 +7,7 @@
 // They shouldn't be commited into vcs!!
 export const environment = {
   production: false, 
+  host: 'localhost',
   username: 'alice',                
   password: 'alice',                
   client_id: 'nodejs_dev',

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using Erazer_Authorization;
 using IdentityServer4.Quickstart.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,10 +22,10 @@ namespace Erazer.Authorization
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // TODO ADD AS ENV VARIABLE!
-            const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=ErazerSSO.IdentityServer;trusted_connection=yes;";
-            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-
+            // TODO ADD AS ENV/CONF VARIABLE!
+            // const string connectionString = @"Data Source=(LocalDb)\MSSQLLocalDB;database=ErazerSSO.IdentityServer;trusted_connection=yes;";
+            // var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var hostname = Configuration["baseUrl"];
             services.AddMvc();
 
             services.Configure<IISOptions>(options =>
@@ -46,17 +45,20 @@ namespace Erazer.Authorization
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-            }).AddOperationalStore(options =>
-            {
-                options.ConfigureDbContext = dbBuilder =>
-                    dbBuilder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-                options.EnableTokenCleanup = true;
             });
- 
+             
             builder.AddInMemoryIdentityResources(Config.GetIdentityResources());
             builder.AddInMemoryApiResources(Config.GetApis());
-            builder.AddInMemoryClients(Config.GetClients());
+            builder.AddInMemoryClients(Config.GetClients(hostname));
             builder.AddTestUsers(TestUsers.Users);
+            builder.AddInMemoryPersistedGrants();
+            // TODO ADD SQL SERVER IN DOCKER COMPOSE!!
+            //builder.AddOperationalStore(options =>
+            //{
+            //    options.ConfigureDbContext = dbBuilder =>
+            //        dbBuilder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+            //    options.EnableTokenCleanup = true;
+            //});
 
             if (Environment.IsDevelopment())
             {
@@ -64,7 +66,8 @@ namespace Erazer.Authorization
             }
             else
             {
-                throw new Exception("need to configure key material");
+                // TODO DON'T DO THIS IN PRODUCTION!!!!!!!
+                builder.AddDeveloperSigningCredential();
             }
 
             services.AddAuthentication();

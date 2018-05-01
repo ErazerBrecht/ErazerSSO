@@ -26,7 +26,7 @@ namespace Erazer.API
             services.AddAuthentication("Bearer")
                 .AddIdentityServerAuthentication(options =>
                 {
-                    options.Authority = "http://localhost:5000";
+                    options.Authority = $"{Configuration["baseUrl"]}:5000";
                     options.RequireHttpsMetadata = false;
                     options.ApiName = "api1";
                 });
@@ -40,8 +40,11 @@ namespace Erazer.API
                 app.UseDeveloperExceptionPage();
                 app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromDays(1)));
             }
+            else
+            {
+                app.UseCors(builder => builder.WithOrigins($"{Configuration["baseUrl"]}:8888").AllowAnyHeader().AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromDays(1)));
+            }
 
-            // TODO Add CORS in non dev env
             app.UseAuthentication();
             app.UseMvc();
         }

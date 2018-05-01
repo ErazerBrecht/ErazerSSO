@@ -2,10 +2,11 @@ const fs = require('fs');
 const spdy = require('spdy');
 const appPromise = require('./app');
 
-const options = {
-	key: fs.readFileSync(__dirname + '/server.key'),
-	cert: fs.readFileSync(__dirname + '/server.crt')
-}
+// TODO ADD THESE FILES IN DOCKERFILE!!
+// const options = {
+// 	key: fs.readFileSync(__dirname + '/server.key'),
+// 	cert: fs.readFileSync(__dirname + '/server.crt')
+// }
 
 appPromise.then(app => {
 	const port = process.env.PORT || 8888;

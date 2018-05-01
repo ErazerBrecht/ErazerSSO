@@ -30,6 +30,7 @@ namespace Erazer.Authorization
 
             return WebHost.CreateDefaultBuilder(args)
                     .UseStartup<Startup>()
+                    .UseUrls("http://*:5000")
                     .ConfigureLogging(builder =>
                     {
                         builder.ClearProviders();

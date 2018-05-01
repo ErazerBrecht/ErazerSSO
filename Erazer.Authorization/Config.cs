@@ -2,11 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using IdentityServer4.Models;
 using System;
 using System.Collections.Generic;
+using IdentityServer4.Models;
 
-namespace Erazer_Authorization
+namespace Erazer.Authorization
 {
     public static class Config
     {
@@ -27,7 +27,7 @@ namespace Erazer_Authorization
             };
         }
 
-        public static IEnumerable<Client> GetClients()
+        public static IEnumerable<Client> GetClients(string hostname)
         {
             return new[]
             {
@@ -41,9 +41,9 @@ namespace Erazer_Authorization
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
 
-                    RedirectUris = { "http://localhost:5001/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:5001/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:5001/signout-callback-oidc" },
+                    RedirectUris = { $"{hostname}:5001/signin-oidc" },
+                    FrontChannelLogoutUri = $"{hostname}:5001/signout-oidc",
+                    PostLogoutRedirectUris = { $"{hostname}:5001/signout-callback-oidc" },
 
                     AccessTokenLifetime = 1800,
                     AbsoluteRefreshTokenLifetime = (int) TimeSpan.FromHours(8).TotalSeconds,
@@ -66,8 +66,8 @@ namespace Erazer_Authorization
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = { new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256()) },
 
-                    RedirectUris = { "http://localhost:8888/auth/signin-oidc" },
-                    PostLogoutRedirectUris = { "http://localhost:8888" },
+                    RedirectUris = { $"{hostname}:8888/auth/signin-oidc" },
+                    PostLogoutRedirectUris = { $"{hostname}:8888" },
 
                     AllowedScopes = { "openid", "profile", "api1" }
                 },
@@ -94,9 +94,9 @@ namespace Erazer_Authorization
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = { new Secret("EC095F67-66AB-40E5-A140-6E4806194CD9".Sha256()) },
 
-                    RedirectUris = { "http://localhost:9999/signin-oidc" },
-                    FrontChannelLogoutUri = "http://localhost:9999/signout-oidc",
-                    PostLogoutRedirectUris = { "http://localhost:9999/signout-callback-oidc" },
+                    RedirectUris = { $"{hostname}:9999/signin-oidc" },
+                    FrontChannelLogoutUri = $"{hostname}:9999/signout-oidc",
+                    PostLogoutRedirectUris = { $"{hostname}:9999/signout-callback-oidc" },
 
                     AllowedScopes = { "openid", "profile" }
                 },
