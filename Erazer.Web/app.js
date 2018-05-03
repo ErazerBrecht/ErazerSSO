@@ -30,7 +30,7 @@ module.exports = new Promise(async (resolve, reject) => {
     app.use(compression());
 
     app.use(redirectMiddleware);
-    staticfiles(app);
+    app.use(staticfiles(app.get('config').wwwroot));
 
     resolve(app);
 });

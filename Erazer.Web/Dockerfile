@@ -25,6 +25,4 @@ FROM base AS final
 WORKDIR /app
 USER node
 COPY --from=publish /dist .
-ENV host=10.0.75.1
-ENV NODE_ENV=production
 ENTRYPOINT ["node", "index.js"]

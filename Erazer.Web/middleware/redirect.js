@@ -8,7 +8,6 @@ module.exports = (req, res, next) => {
     }
 
     if (req.url.startsWith('/portal')) {
-        console.log(req.user);
         if (!req.user)
             return res.redirect('/');
         if (!req.url.includes('.'))
