@@ -6,8 +6,9 @@
     "ng": "ng",
     "start:landing": "ng serve landing --port 4200",
     "start:portal": "ng serve portal --port 4201",
-    "build": "ng build",
-    "release": "ng build --prod --base-href /portal/",
+    "release:landing": "ng build landing --prod && ng run landing:server:production --bundleDependencies all",
+    "release:portal": "ng build portal --prod --base-href /portal/",
+    "release": "npm run release:landing && npm run release:portal",
     "lint": "ng lint"
   },
   "private": true,
@@ -22,6 +23,8 @@
     "@angular/platform-server": "~8.2.14",
     "@angular/router": "~8.2.14",
     "@ng-bootstrap/ng-bootstrap": "~5.1.5",
+    "@nguniversal/express-engine": "~8.2.6",
+    "@nguniversal/module-map-ngfactory-loader": "~8.2.6",
     "bootstrap": "~4.4.1",
     "rxjs": "~6.5.4",
     "zone.js": "~0.9.1"

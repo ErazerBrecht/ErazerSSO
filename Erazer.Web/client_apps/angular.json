@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../../wwwroot/portal",
+            "outputPath": "../wwwroot/portal",
             "index": "projects/portal/src/index.html",
             "main": "projects/portal/src/main.ts",
             "polyfills": "projects/portal/src/polyfills.ts",
@@ -87,7 +87,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../../wwwroot",
+            "outputPath": "../wwwroot",
             "index": "projects/landing/src/index.html",
             "main": "projects/landing/src/main.ts",
             "tsConfig": "projects/landing/tsconfig.app.json",
@@ -151,16 +151,22 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "../../wwwroot/landing-server",
+            "outputPath": "../wwwroot/landing-ssr",
             "main": "projects/landing/src/main.server.ts",
-            "tsConfig": "projects/landing/tsconfig.server.json"
+            "tsConfig": "projects/landing/tsconfig.server.json",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/landing/src/styles",
+                "projects/landing/src/styles/paper-kit"
+              ]
+            }
           },
           "configurations": {
             "production": {
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": true,
+              "extractLicenses": false,
               "vendorChunk": false,
               "fileReplacements": [
                 {
