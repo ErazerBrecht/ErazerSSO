@@ -1,0 +1,178 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "portal": {
+      "root": "projects/portal",
+      "sourceRoot": "projects/portal/src",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "../../wwwroot/portal",
+            "index": "projects/portal/src/index.html",
+            "main": "projects/portal/src/main.ts",
+            "polyfills": "projects/portal/src/polyfills.ts",
+            "tsConfig": "projects/portal/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "favicon.ico",
+                "input": "projects/portal/src",
+                "output": "/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/portal/src/assets",
+                "output": "/assets"
+              }
+            ],
+            "styles": [
+              "projects/portal/src/styles.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/portal/src/environments/environment.ts",
+                  "with": "projects/portal/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "portal:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "portal:build:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/portal/tsconfig.app.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "landing": {
+      "root": "projects/landing",
+      "sourceRoot": "projects/landing/src",
+      "projectType": "application",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "../../wwwroot",
+            "index": "projects/landing/src/index.html",
+            "main": "projects/landing/src/main.ts",
+            "tsConfig": "projects/landing/tsconfig.app.json",
+            "polyfills": "projects/landing/src/polyfills.ts",
+            "assets": [
+              "projects/landing/src/assets"
+            ],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "projects/landing/src/styles/paper-kit.scss",
+              "projects/landing/src/styles/nucleo-icons.css"
+            ],
+            "scripts": [],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "projects/landing/src/styles",
+                "projects/landing/src/styles/paper-kit"
+              ]
+            }
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "projects/landing/src/environments/environment.ts",
+                  "with": "projects/landing/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "landing:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "landing:build:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/landing/tsconfig.app.json"
+            ],
+            "exclude": []
+          }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "../../wwwroot/landing-server",
+            "main": "projects/landing/src/main.server.ts",
+            "tsConfig": "projects/landing/tsconfig.server.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "fileReplacements": [
+                {
+                  "replace": "projects/landing/src/environments/environment.ts",
+                  "with": "projects/landing/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "portal"
+}
