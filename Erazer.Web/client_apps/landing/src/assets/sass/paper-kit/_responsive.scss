@@ -1,4 +1,5 @@
 /*          Changes for small display      */
+// TODO Move to correct components / remove some content...
 
 @media (max-width: 767px){
     .navbar-transparent{
@@ -358,8 +359,8 @@
 }
 @media screen and (max-width: 991px){
     .navbar-collapse {
-        position: fixed;
         display: block;
+        position: fixed;
         top: 0;
         height: 100%;
         width: 230px;
@@ -421,6 +422,7 @@
     .nav-open{
         & .navbar-collapse{
             @include transform-translate-x(0px);
+            display: block;
         }
         & .wrapper{
             left: 0;
@@ -429,6 +431,7 @@
         & .navbar-translate{
             @include transform-translate-x(-230px);
         }
+        
     }
     .wrapper .navbar-collapse{
         display: none;

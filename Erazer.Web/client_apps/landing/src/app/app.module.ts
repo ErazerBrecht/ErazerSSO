@@ -1,8 +1,9 @@
 import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
+import {NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
+
 import { AppRoutingModule } from './app.routing';
 
 import { AppComponent } from './app.component';
@@ -10,9 +11,8 @@ import { LandingComponent } from './landing/landing.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { FooterComponent } from './shared/footer/footer.component';
-import { ComponentsModule } from './components/components.module';
 
-import {LandingService } from './landing/landing.service';
+import { LandingService } from './landing/landing.service';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
@@ -27,12 +27,11 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     BrowserModule.withServerTransition({ appId: 'my-app' }),
     BrowserTransferStateModule,
-    NgbModule.forRoot(),
+    NgbTabsetModule,
     FormsModule,
     RouterModule,
     HttpClientModule,
-    AppRoutingModule,
-    ComponentsModule    
+    AppRoutingModule
   ],
   providers: [LandingService],
   bootstrap: [AppComponent]
