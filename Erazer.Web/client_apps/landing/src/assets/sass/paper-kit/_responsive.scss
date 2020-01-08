@@ -23,11 +23,6 @@
         height: 400px;
         overflow-y: scroll;
     }
-    .navbar .navbar-collapse.collapse,
-    .navbar .navbar-collapse.collapse.in,
-    .navbar .navbar-collapse.collapsing{
-        // display: none !important;
-    }
     .demo-header .motto{
         padding-top: 30% !important;
     }
@@ -157,10 +152,6 @@
             }
         }
 
-    }
-
-    .bootstrap-datetimepicker-widget{
-        visibility: visible;
     }
 
     .dropdown-menu {
