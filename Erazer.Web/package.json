@@ -24,7 +24,7 @@
     "install:client": "cd client_apps && npm install",
     "install:server": "npm install",
     "install:all": "npm run install:server && npm run install:client",
-    "release": "npm run release:landing && npm run release:portal"
+    "release": "npm run release:client"
   },
   "author": "",
   "license": "ISC"

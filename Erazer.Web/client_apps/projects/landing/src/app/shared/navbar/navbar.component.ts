@@ -1,5 +1,5 @@
-import { Component, OnInit, ElementRef, Renderer } from '@angular/core';
-import { Location } from '@angular/common';
+import { Component, OnInit, ElementRef, Renderer, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
     selector: 'app-navbar',
@@ -9,27 +9,30 @@ import { Location } from '@angular/common';
 export class NavbarComponent implements OnInit {
     private toggleButton: Element;
     private sidebarVisible: boolean;
+    private isBrowser: boolean;
 
-    constructor(private renderer: Renderer, public location: Location, private element: ElementRef) {
+    constructor(@Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer, private element: ElementRef) {
         this.sidebarVisible = false;
+        this.isBrowser = isPlatformBrowser(this.platformId);
     }
 
     ngOnInit() {
-        // TODO IF NOT SSR
-        const el: HTMLElement = this.element.nativeElement;
-        this.toggleButton = el.getElementsByClassName('navbar-toggler')[0];
-        const navbar = el.getElementsByTagName('nav')[0];
+        if (this.isBrowser) {
+            const el: HTMLElement = this.element.nativeElement;
+            this.toggleButton = el.getElementsByClassName('navbar-toggler')[0];
+            const navbar = el.getElementsByTagName('nav')[0];
 
-        this.renderer.listenGlobal('window', 'scroll', () => {
-            const number = window.scrollY;
-            if (number > 150 || window.pageYOffset > 150) {
-                // add logic
-                navbar.classList.remove('navbar-transparent');
-            } else {
-                // remove logic
-                navbar.classList.add('navbar-transparent');
-            }
-        });
+            this.renderer.listenGlobal('window', 'scroll', () => {
+                const number = window.scrollY;
+                if (number > 150 || window.pageYOffset > 150) {
+                    // add logic
+                    navbar.classList.remove('navbar-transparent');
+                } else {
+                    // remove logic
+                    navbar.classList.add('navbar-transparent');
+                }
+            });
+        }
     }
 
     sidebarOpen() {

@@ -2,7 +2,8 @@ import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-bro
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import {NgbTabsetModule} from '@ng-bootstrap/ng-bootstrap';
+import { TransferHttpCacheModule } from '@nguniversal/common';
+import { NgbTabsetModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app.routing';
 
@@ -27,6 +28,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     BrowserModule.withServerTransition({ appId: 'my-app' }),
     BrowserTransferStateModule,
+    TransferHttpCacheModule,
     NgbTabsetModule,
     FormsModule,
     RouterModule,
