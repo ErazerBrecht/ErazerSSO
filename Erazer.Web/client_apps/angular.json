@@ -96,8 +96,6 @@
               "projects/landing/src/assets"
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "projects/landing/src/styles/paper-kit.scss",
               "projects/landing/src/styles/nucleo-icons.css"
             ],
             "scripts": [],
