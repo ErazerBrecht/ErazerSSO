@@ -1,3 +1,5 @@
+const purify = require("purify-css");
+
 module.exports = (req, res, next) => {
     const wwwroot = req.app.get('config').wwwroot;
 
@@ -24,5 +26,18 @@ module.exports = (req, res, next) => {
 function angularRouter(req, res) {
     /* Server-side rendering */
     res.set('Cache-Control', 'public, max-age=3600');
-    res.render('index', { req, res });
+    res.render('index', { req, res }, (err, html) => {
+        // TODO err handling...
+
+        var css = ['./wwwroot/styles.*.css'];
+        var options = {
+            minify: true,
+        };
+
+        purify(html, css, options, function (purifiedResult) {
+            const startIndexEndOfHead = html.indexOf('</head>');
+            const htmlWithCss = `${html.slice(0, startIndexEndOfHead)}<style>${purifiedResult}</style>${html.slice(startIndexEndOfHead)}`;
+            res.send(htmlWithCss);
+        });
+    });
 }
