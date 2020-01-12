@@ -9,16 +9,15 @@
     "express": "~4.16.3",
     "express-session": "~1.15.6",
     "mime": "~2.3.1",
+    "clean-css": "~4.2.1",
     "morgan": "*",
     "nconf": "~0.10.0",
     "openid-client": "*",
     "passport": "*",
+    "purgecss": "~1.4.2",
     "spdy": "~3.4.7",
     "url": "~0.11.0",
     "zone.js": "~0.9.1"
-  },
-  "devDependencies": {
-    "purify-css": "^1.2.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
