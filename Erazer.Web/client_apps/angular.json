@@ -85,7 +85,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
             "outputPath": "../wwwroot",
             "index": "projects/landing/src/index.html",
@@ -96,6 +96,8 @@
               "projects/landing/src/assets"
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "projects/landing/src/styles/paper-kit.scss",
               "projects/landing/src/styles/nucleo-icons.css"
             ],
             "scripts": [],
@@ -104,7 +106,8 @@
                 "projects/landing/src/styles",
                 "projects/landing/src/styles/paper-kit"
               ]
-            }
+            },
+            "indexTransform": "./index-html-transform.js",
           },
           "configurations": {
             "production": {

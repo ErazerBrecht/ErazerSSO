@@ -17,7 +17,9 @@
     "url": "~0.11.0",
     "zone.js": "~0.9.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "purify-css": "^1.2.5"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "release:client": "cd client_apps && npm run release",

@@ -23,5 +23,6 @@ module.exports = (req, res, next) => {
 
 function angularRouter(req, res) {
     /* Server-side rendering */
+    res.set('Cache-Control', 'public, max-age=3600');
     res.render('index', { req, res });
 }
