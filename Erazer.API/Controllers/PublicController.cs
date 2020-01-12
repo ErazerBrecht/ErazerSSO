@@ -10,7 +10,7 @@ namespace Erazer.API.Controllers
     [Route("api/public")]
     public class PublicController : Controller
     {
-        private readonly IReadOnlyCollection<string> _qoutes = new ReadOnlyCollection<string>(
+        private readonly IReadOnlyCollection<string> _quotes = new ReadOnlyCollection<string>(
             new[]
             {
                 "If you want to achieve greatness stop asking for permission. ~Anonymous",
@@ -120,10 +120,11 @@ namespace Erazer.API.Controllers
         [HttpGet]
         public string Get()
         {
+            
             var random = new Random();
-            //var index  = random.Next(0, _qoutes.Count - 1);
-            var index = 1;
-            return _qoutes.ElementAt(index);
+            var index  = random.Next(0, _quotes.Count - 1);
+            //var index = 1;
+            return _quotes.ElementAt(index);
         }
     }
 }

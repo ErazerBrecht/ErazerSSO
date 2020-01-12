@@ -12,7 +12,6 @@ const ssr = require('./ssr');
 const staticfiles = require('./staticfiles');
 
 module.exports = new Promise(async (resolve, reject) => {
-    //#region Setup (ConfigureServices)
     // Add config
     config(app);
     ssr(app);
@@ -24,7 +23,6 @@ module.exports = new Promise(async (resolve, reject) => {
     catch (error) {
         reject(error);
     }
-    //#endregion
 
     app.use(morgan('dev'));
     app.use(compression());

@@ -1,3 +1,6 @@
+const CleanCSS = require('clean-css');
+const Purgecss = require('purgecss');
+
 module.exports = (req, res, next) => {
     const wwwroot = req.app.get('config').wwwroot;
 
@@ -23,5 +26,30 @@ module.exports = (req, res, next) => {
 
 function angularRouter(req, res) {
     /* Server-side rendering */
-    res.render('index', { req, res });
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.render('index', { req, res }, (err, html) => {
+        // TODO err handling...
+        const criticalCss = generateCriticalCss(html);
+
+        const startIndexEndOfHead = html.indexOf('</head>');
+        const htmlWithCss = `${html.slice(0, startIndexEndOfHead)}<style>${criticalCss}</style>${html.slice(startIndexEndOfHead)}`;
+        res.send(htmlWithCss);
+    });
+}
+
+function generateCriticalCss(html) {
+    const content = {
+        raw: html,
+        extension: 'html'
+    }
+
+    const purgeCss = new Purgecss({
+        content: [content],
+        css: ['./wwwroot/styles.*.css']
+    });
+
+    const result = purgeCss.purge()[0];
+    const minified = new CleanCSS({ level: { 1: { specialComments: false } } }).minify(result.css);
+
+    return minified.styles;
 }
