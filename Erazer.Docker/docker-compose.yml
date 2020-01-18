@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  erazer.sso.identityserver:
+    image: erazerbrecht/erazersso-identityserver
+    build:
+      context: Erazer.Authorization
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_PRINT_TELEMETRY_MESSAGE=false
+  erazer.sso.api:
+    image: erazerbrecht/erazersso-api
+    build:
+      context: Erazer.API
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_PRINT_TELEMETRY_MESSAGE=false
+  erazer.sso.web:
+    image: erazerbrecht/erazersso-web
+    build:
+      context: Erazer.Web
+      dockerfile: Dockerfile
+    depends_on:
+      - "erazer.sso.identityserver"
+      - "redis"
+    ports:
+      - "8888:8888"
+    environment:
+      - host=10.0.75.1
+      - NODE_ENV=production
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6380:6379"
