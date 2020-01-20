@@ -28,7 +28,7 @@ namespace Erazer.API
                 {
                     options.Authority = $"{Configuration["baseUrl"]}:5000";
                     options.RequireHttpsMetadata = false;
-                    options.ApiName = "api1";
+                    options.ApiName = "api";
                 });
         }
 
@@ -38,11 +38,11 @@ namespace Erazer.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromDays(1)));
+                app.UseCors(builder => builder.WithOrigins("http://localhost:8888", "http://localhost:4201").AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             }
             else
             {
-                app.UseCors(builder => builder.WithOrigins($"{Configuration["baseUrl"]}:8888").AllowAnyHeader().AllowAnyMethod().SetPreflightMaxAge(TimeSpan.FromDays(1)));
+                app.UseCors(builder => builder.WithOrigins($"{Configuration["baseUrl"]}:8888").AllowAnyHeader().AllowAnyMethod());
             }
 
             app.UseAuthentication();

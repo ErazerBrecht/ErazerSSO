@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using IdentityModel;
 using IdentityServer4.Models;
 
 namespace Erazer.IdentityProvider
@@ -16,6 +18,7 @@ namespace Erazer.IdentityProvider
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
+                new IdentityResource("role", "Role", new List<string> {JwtClaimTypes.Role})
             };
         }
 
@@ -23,7 +26,7 @@ namespace Erazer.IdentityProvider
         {
             return new ApiResource[]
             {
-                new ApiResource("api1", "My API #1")
+                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"})
             };
         }
 
@@ -39,51 +42,70 @@ namespace Erazer.IdentityProvider
 
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Hybrid,
-                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    ClientSecrets = {new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256())},
 
-                    RedirectUris = { $"{hostname}:5001/signin-oidc" },
+                    RedirectUris = {$"{hostname}:5001/signin-oidc"},
                     FrontChannelLogoutUri = $"{hostname}:5001/signout-oidc",
-                    PostLogoutRedirectUris = { $"{hostname}:5001/signout-callback-oidc" },
+                    PostLogoutRedirectUris = {$"{hostname}:5001/signout-callback-oidc"},
 
                     AccessTokenLifetime = 1800,
                     AbsoluteRefreshTokenLifetime = (int) TimeSpan.FromHours(8).TotalSeconds,
                     RefreshTokenExpiration = TokenExpiration.Absolute,
                     RefreshTokenUsage = TokenUsage.ReUse,
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "api1" }
+                    AllowedScopes = {"openid", "profile", "api1"}
                 },
 
-                // New client (NodeJS + Angular) using 'code authorization'
+                // New client (NodeJS) using 'code authorization'
                 new Client
                 {
                     ClientId = "nodejs",
-                    ClientName = "ErazerSSO nodejs",
-                    
-                    AccessTokenLifetime = 3600,
+                    ClientName = "ErazerSSO NodeJS",
+
+                    AccessTokenLifetime = 25,
+                    IdentityTokenLifetime = 25,
+                    AllowAccessTokensViaBrowser = false,
                     AllowOfflineAccess = false,
 
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.Code,
-                    ClientSecrets = { new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256()) },
+                    ClientSecrets = {new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256())},
 
-                    RedirectUris = { $"{hostname}:8888/auth/signin-oidc" },
-                    PostLogoutRedirectUris = { $"{hostname}:8888" },
+                    RedirectUris = {$"{hostname}:8888/auth/signin-oidc"},
+                    PostLogoutRedirectUris = {$"{hostname}:8888"},
 
-                    AllowedScopes = { "openid", "profile", "api1" }
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AllowedScopes = {"openid", "profile", "role"}
                 },
                 new Client
                 {
-                    ClientId = "nodejs_dev",
-                    ClientName = "ErazerSSO nodejs_dev",
+                    ClientId = "angular",
+                    ClientName = "ErazerSSO Angular",
 
-                    AccessTokenLifetime = (int) TimeSpan.FromDays(7).TotalSeconds,
+                    AccessTokenLifetime = 3600,
+                    AllowOfflineAccess = false,
+                    
+                    RequireClientSecret = false,
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RequirePkce = true,
+                    RequireConsent = false,
+                    RedirectUris = {$"{hostname}:8888/portal/index.html"},
+
+                    AllowedScopes = {"openid", "profile", "api"}
+                },
+                new Client
+                {
+                    ClientId = "angular_dev",
+                    ClientName = "ErazerSSO Angular_DEV",
+
+                    AccessTokenLifetime = (int) TimeSpan.FromDays(14).TotalSeconds,
                     AllowOfflineAccess = false,
 
                     RequireConsent = false,
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    ClientSecrets = { new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256()) },
+                    ClientSecrets = {new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256())},
 
-                    AllowedScopes = { "openid", "profile", "api1" }
+                    AllowedScopes = {"openid", "profile", "role", "api"}
                 },
                 new Client
                 {
@@ -92,13 +114,13 @@ namespace Erazer.IdentityProvider
 
                     RequireConsent = true,
                     AllowedGrantTypes = GrantTypes.Code,
-                    ClientSecrets = { new Secret("EC095F67-66AB-40E5-A140-6E4806194CD9".Sha256()) },
+                    ClientSecrets = {new Secret("EC095F67-66AB-40E5-A140-6E4806194CD9".Sha256())},
 
-                    RedirectUris = { $"{hostname}:9999/signin-oidc" },
+                    RedirectUris = {$"{hostname}:9999/signin-oidc"},
                     FrontChannelLogoutUri = $"{hostname}:9999/signout-oidc",
-                    PostLogoutRedirectUris = { $"{hostname}:9999/signout-callback-oidc" },
+                    PostLogoutRedirectUris = {$"{hostname}:9999/signout-callback-oidc"},
 
-                    AllowedScopes = { "openid", "profile" }
+                    AllowedScopes = {"openid", "profile"}
                 },
             };
         }

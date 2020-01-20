@@ -10,7 +10,7 @@ export const environment = {
   host: 'localhost',
   username: 'alice',                
   password: 'alice',                
-  client_id: 'nodejs_dev',
+  client_id: 'angular_dev',
   client_secret: '425A4639-4079-49E1-9F86-E832F246F5FB'
 };
 

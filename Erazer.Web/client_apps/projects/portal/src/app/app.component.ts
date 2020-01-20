@@ -6,5 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  constructor() { }
+
+  onLogout() {
+    localStorage.clear();
+    window.location.href = "/auth/logout"
+
+  }
 }
