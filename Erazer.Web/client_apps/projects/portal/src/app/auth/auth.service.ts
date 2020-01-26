@@ -50,6 +50,7 @@ export class InitialAuthService {
             this.oauthService.configure(authConfig);
             this.oauthService.setStorage(sessionStorage);
             this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+            this.oauthService.setupAutomaticSilentRefresh();
 
             this.oauthService.events.subscribe(event => {
                 if (event instanceof OAuthErrorEvent) {

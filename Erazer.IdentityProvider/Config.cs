@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using IdentityModel;
 using IdentityServer4.Models;
 
@@ -62,8 +61,8 @@ namespace Erazer.IdentityProvider
                     ClientId = "nodejs",
                     ClientName = "ErazerSSO NodeJS",
 
-                    AccessTokenLifetime = 25,
-                    IdentityTokenLifetime = 25,
+                    AccessTokenLifetime = 60,
+                    IdentityTokenLifetime = 60,
                     AllowAccessTokensViaBrowser = false,
                     AllowOfflineAccess = false,
 
@@ -82,14 +81,20 @@ namespace Erazer.IdentityProvider
                     ClientId = "angular",
                     ClientName = "ErazerSSO Angular",
 
-                    AccessTokenLifetime = 3600,
+                    AccessTokenLifetime = 300,
                     AllowOfflineAccess = false,
-                    
+
                     RequireClientSecret = false,
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireConsent = false,
-                    RedirectUris = {$"{hostname}:8888/portal/index.html"},
+                    RedirectUris = new[]
+                    {
+                        $"{hostname}:4201/index.html",            
+                        $"{hostname}:4201/silent-refresh.html",    
+                        $"{hostname}:8888/portal/index.html",
+                        $"{hostname}:8888/portal/silent-refresh.html"
+                    },
 
                     AllowedScopes = {"openid", "profile", "api"}
                 },
