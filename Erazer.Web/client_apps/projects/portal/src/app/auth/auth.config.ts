@@ -4,11 +4,11 @@ export const authConfig: AuthConfig = {
 
     issuer: 'http://localhost:5000',
     redirectUri: document.getElementsByTagName('base')[0].href + 'index.html',
-    silentRefreshRedirectUri: document.getElementsByTagName('base')[0].href + '/silent-refresh.html',
+    silentRefreshRedirectUri: document.getElementsByTagName('base')[0].href + 'silent-refresh.html',
     clientId: 'angular',
     responseType: 'code',
     scope: 'openid profile api',
     showDebugInformation: true,
-    silentRefreshShowIFrame: true,
-    timeoutFactor: 0.01,
+    silentRefreshShowIFrame: false,
+    timeoutFactor: 0.2,
 }

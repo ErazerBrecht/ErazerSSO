@@ -6,7 +6,7 @@
 // IMPORTANT: In a real environment the secret values (password & client_secret) would be loaded by dotenv or something similiar!!
 // They shouldn't be commited into vcs!!
 export const environment = {
-  production: true, 
+  production: false, 
   host: 'localhost',
   username: 'alice',                
   password: 'alice',                

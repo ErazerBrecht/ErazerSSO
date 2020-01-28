@@ -50,7 +50,6 @@ export class InitialAuthService {
             this.oauthService.configure(authConfig);
             this.oauthService.setStorage(sessionStorage);
             this.oauthService.tokenValidationHandler = new JwksValidationHandler();
-            this.oauthService.setupAutomaticSilentRefresh();
 
             this.oauthService.events.subscribe(event => {
                 if (event instanceof OAuthErrorEvent) {
@@ -62,7 +61,7 @@ export class InitialAuthService {
             // continue initializing app (provoking a token_received event) or redirect to login-page
             this.oauthService.loadDiscoveryDocumentAndLogin().then(isLoggedIn => {
                 if (isLoggedIn) {
-                    //this.oauthService.setupAutomaticSilentRefresh();
+                    this.oauthService.setupAutomaticSilentRefresh();
                     resolveFn();
                 } else {
                     this.oauthService.initLoginFlow();

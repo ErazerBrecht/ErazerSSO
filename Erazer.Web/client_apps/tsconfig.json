@@ -18,6 +18,12 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {     
+      "angular-oauth2-oidc": [
+        "projects/angular-oidc/src/public_api"
+      ]
+      
+    }
   }
 }
