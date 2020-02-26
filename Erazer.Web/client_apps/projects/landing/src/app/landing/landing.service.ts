@@ -8,7 +8,7 @@ export class LandingService {
   private baseUrl: string;
 
   constructor(private http: HttpClient) {
-    this.baseUrl = `http://${environment.host}:5002/api`;
+    this.baseUrl = `${environment.host}/api`;
    }
 
   getMotd(): Observable<string> {

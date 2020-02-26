@@ -1,8 +1,7 @@
-FROM microsoft/aspnetcore:2.0 AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 WORKDIR /app
-EXPOSE 5002
 
-FROM microsoft/aspnetcore-build:2.0 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src
 COPY Erazer.API.csproj .
 RUN dotnet restore Erazer.API.csproj
@@ -15,4 +14,4 @@ RUN dotnet publish Erazer.API.csproj -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
-ENTRYPOINT ["dotnet", "Erazer.API.dll"]
+CMD ASPNETCORE_URLS=http://*:$PORT dotnet Erazer.API.dll

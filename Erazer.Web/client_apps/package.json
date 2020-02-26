@@ -28,10 +28,11 @@
     "@nguniversal/module-map-ngfactory-loader": "~8.2.6",
     "bootstrap": "~4.4.1",
     "font-awesome": "~4.7.0",
+    "placeholder-loading": "0.2.5",
     "rxjs": "~6.5.4",
     "typeface-montserrat": "0.0.75",
     "zone.js": "~0.9.1",
-    "tsickle": "~0.36.0"
+    "jsrsasign": "^8.0.12"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "~8.4.1",

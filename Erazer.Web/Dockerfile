@@ -1,9 +1,9 @@
-FROM node:10-alpine AS base
+FROM node:12-alpine AS base
 WORKDIR /app
 USER node
 EXPOSE 8888
 
-FROM node:10-alpine AS build
+FROM node:12-alpine AS build
 WORKDIR /src
 COPY . Erazer.Web/
 RUN chown -R node:node Erazer.Web

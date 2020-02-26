@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using IdentityModel;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace Erazer.IdentityProvider
 {
@@ -29,8 +31,16 @@ namespace Erazer.IdentityProvider
             };
         }
 
-        public static IEnumerable<Client> GetClients(string hostname)
+        public static IEnumerable<Client> GetClients(IConfiguration configuration)
         {
+            var legacyHostname = configuration["legacy_hostname"];
+            var nodejsHostname = configuration["nodejs_hostname"];
+            var thirdpartyHostname = configuration["thirdparty_hostname"];
+
+            Log.Logger.Information($"Legacy hostname: {legacyHostname}");
+            Log.Logger.Information($"NodeJS hostname: {nodejsHostname}");
+            Log.Logger.Information($"Thirdparty hostname: {thirdpartyHostname}");
+            
             return new[]
             {
                 // Legacy client (MVC + AngularJS 1.X) using hybrid flow
@@ -43,9 +53,9 @@ namespace Erazer.IdentityProvider
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     ClientSecrets = {new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256())},
 
-                    RedirectUris = {$"{hostname}:5001/signin-oidc"},
-                    FrontChannelLogoutUri = $"{hostname}:5001/signout-oidc",
-                    PostLogoutRedirectUris = {$"{hostname}:5001/signout-callback-oidc"},
+                    RedirectUris = {$"{legacyHostname}/signin-oidc"},
+                    FrontChannelLogoutUri = $"{legacyHostname}/signout-oidc",
+                    PostLogoutRedirectUris = {$"{legacyHostname}:5001/signout-callback-oidc"},
 
                     AccessTokenLifetime = 1800,
                     AbsoluteRefreshTokenLifetime = (int) TimeSpan.FromHours(8).TotalSeconds,
@@ -70,8 +80,8 @@ namespace Erazer.IdentityProvider
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = {new Secret("C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C".Sha256())},
 
-                    RedirectUris = {$"{hostname}:8888/auth/signin-oidc"},
-                    PostLogoutRedirectUris = {$"{hostname}:8888"},
+                    RedirectUris = {$"{nodejsHostname}/auth/signin-oidc"},
+                    PostLogoutRedirectUris = {nodejsHostname},
 
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AllowedScopes = {"openid", "profile", "role"}
@@ -90,10 +100,8 @@ namespace Erazer.IdentityProvider
                     RequireConsent = false,
                     RedirectUris = new[]
                     {
-                        $"{hostname}:4201/index.html",            
-                        $"{hostname}:4201/silent-refresh.html",    
-                        $"{hostname}:8888/portal/index.html",
-                        $"{hostname}:8888/portal/silent-refresh.html"
+                        $"{nodejsHostname}/portal/index.html",
+                        $"{nodejsHostname}/portal/silent-refresh.html"
                     },
 
                     AllowedScopes = {"openid", "profile", "api"}
@@ -121,9 +129,9 @@ namespace Erazer.IdentityProvider
                     AllowedGrantTypes = GrantTypes.Code,
                     ClientSecrets = {new Secret("EC095F67-66AB-40E5-A140-6E4806194CD9".Sha256())},
 
-                    RedirectUris = {$"{hostname}:9999/signin-oidc"},
-                    FrontChannelLogoutUri = $"{hostname}:9999/signout-oidc",
-                    PostLogoutRedirectUris = {$"{hostname}:9999/signout-callback-oidc"},
+                    RedirectUris = {$"{thirdpartyHostname}/signin-oidc"},
+                    FrontChannelLogoutUri = $"{thirdpartyHostname}/signout-oidc",
+                    PostLogoutRedirectUris = {$"{thirdpartyHostname}/signout-callback-oidc"},
 
                     AllowedScopes = {"openid", "profile"}
                 },

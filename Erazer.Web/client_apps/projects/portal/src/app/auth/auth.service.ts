@@ -54,6 +54,7 @@ export class InitialAuthService {
             this.oauthService.events.subscribe(event => {
                 if (event instanceof OAuthErrorEvent) {
                     console.error(event);
+                    sessionStorage.clear();
                     window.location.href = "/auth/logout/local";
                 }
             });

@@ -3,7 +3,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,9 +12,9 @@ namespace Erazer.API.Session.AuthenticationHandlers
     {
         private readonly ISessionService _session;
 
-        public JwtSessionAuthenticationHandler(IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger,
-            UrlEncoder encoder, IDataProtectionProvider dataProtection, ISystemClock clock, ISessionService session) :
-            base(options, logger, encoder, dataProtection, clock)
+        public JwtSessionAuthenticationHandler(
+            IOptionsMonitor<JwtBearerOptions> options, ILoggerFactory logger,
+            UrlEncoder encoder, ISystemClock clock, ISessionService session) : base(options, logger, encoder, clock)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
         }

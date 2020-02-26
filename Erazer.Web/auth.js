@@ -11,7 +11,7 @@ module.exports = async (app) => {
 
     // Get oidc information from authorization server (like the token endpoint, ...)
     // Setup client with client_id & client_secret => TODO move client_secret out of vcs!
-    const issuer = await Issuer.discover(`http://${host}:5000`);
+    const issuer = await Issuer.discover(config.idsrv);
     const client = new issuer.Client({ client_id: 'nodejs', client_secret: 'C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C' });
     const oidc = { issuer, client };
 
@@ -28,13 +28,13 @@ module.exports = async (app) => {
     });
 
     // Use oidc strategy, when user is authenticated retrieve information from user (id, username, role) and store it in the session!
-    passport.use('oidc', new Strategy({ client, params: { redirect_uri: `http://${host}:8888/auth/signin-oidc`, scope: 'openid profile role' } }, (tokenset, userinfo, done) => {
+    passport.use('oidc', new Strategy({ client, params: { redirect_uri: `${host}/auth/signin-oidc`, scope: 'openid profile role' } }, (tokenset, userinfo, done) => {
         const user = { id: userinfo.sub, name: userinfo.name, role: userinfo.role, id_token: tokenset.id_token };
         return done(null, user);
     }));
 
     app.use(session({
-        store: new redisStore({ host, port: '6380' }),
+        store: new redisStore({ host: config.redis, port: '6380' }),
         secret: 'tutorialsecret',
         cookie: { sameSite: 'strict' },
         name: 'Erazer.Web',
@@ -46,19 +46,23 @@ module.exports = async (app) => {
     app.use(passport.session());
 
     // Destroys the user session and redirects to the authorization server to destroy their 'SSO' session
-    // TODO Check if user is logged in!
     app.get('/auth/logout', (req, res) => {
-        const idToken = req.user.id_token;
         const logoutUrl = oidc.issuer.end_session_endpoint;
 
-        req.logout();
-        res.redirect(url.format(Object.assign(url.parse(logoutUrl), {
-            search: null,
-            query: {
-                id_token_hint: idToken,
-                post_logout_redirect_uri: `http://${host}:8888`
-            },
-        })));
+        if (req.user) {
+            const idToken = req.user.id_token;
+
+            req.logout();
+            res.redirect(url.format(Object.assign(url.parse(logoutUrl), {
+                search: null,
+                query: {
+                    id_token_hint: idToken,
+                    post_logout_redirect_uri: host
+                },
+            })));
+        }
+
+        res.redirect(logoutUrl);
     });
 
     // Destroys the user session

@@ -4,7 +4,7 @@ services:
   erazer.sso.identityserver:
     image: erazerbrecht/erazersso-identityserver
     build:
-      context: Erazer.Authorization
+      context: ../Erazer.IdentityProvider
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
@@ -14,7 +14,7 @@ services:
   erazer.sso.api:
     image: erazerbrecht/erazersso-api
     build:
-      context: Erazer.API
+      context: ../Erazer.API
       dockerfile: Dockerfile
     ports:
       - "5002:5002"
@@ -24,7 +24,7 @@ services:
   erazer.sso.web:
     image: erazerbrecht/erazersso-web
     build:
-      context: Erazer.Web
+      context: ../Erazer.Web
       dockerfile: Dockerfile
     depends_on:
       - "erazer.sso.identityserver"

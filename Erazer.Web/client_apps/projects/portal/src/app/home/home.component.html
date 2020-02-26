@@ -1,8 +1,8 @@
-<div>
-  <h1>
-    Portal
-  </h1>
+<h1>
+  Portal
+</h1>
 
+<div class="ph-item">
   <table>
     <thead>
       <tr>
@@ -13,11 +13,21 @@
       </tr>
     </thead>
     <tbody>
+
       <tr *ngFor="let result of results | async">
-        <td>{{result.subject}}</td>
-        <td>{{result.score}}</td>
-        <td>{{result.credits}}</td>
-        <td>{{result.remarks}}</td>
+        <td>
+          <app-loading [input]="result?.subject"></app-loading>
+        </td>
+        <td>
+          <app-loading [input]="result?.score"></app-loading>
+        </td>
+        <td>
+          <app-loading [input]="result?.credits"></app-loading>
+        </td>
+        <td>
+          <app-loading [input]="result?.remarks"></app-loading>
+        </td>
+
       </tr>
     </tbody>
   </table>

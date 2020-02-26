@@ -2,7 +2,7 @@ export class ResultModel {
     id: string;
     subject: string;
     score: string;
-    remark: string;
+    remarks: string;
     credits: number;
     added: Date;
 }

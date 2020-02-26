@@ -2,6 +2,10 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Erazer.IdentityProvider.Session;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -13,10 +17,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Erazer.IdentityProvider.Session;
 
 namespace IdentityServer4.Quickstart.UI
 {
@@ -92,20 +92,18 @@ namespace IdentityServer4.Quickstart.UI
                     await _interaction.GrantConsentAsync(context, ConsentResponse.Denied);
 
                     // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
-                    if (await _clientStore.IsPkceClientAsync(context.ClientId))
-                    {
+                    //if (await _clientStore.IsPkceClientAsync(context.ClientId))
+                    //{
                         // if the client is PKCE then we assume it's native, so this change in how to
                         // return the response is for better UX for the end user.
-                        return this.LoadingPage("Redirect", model.ReturnUrl);
-                    }
+                        //return this.LoadingPage("Redirect", model.ReturnUrl);
+                    //}
 
                     return Redirect(model.ReturnUrl);
                 }
-                else
-                {
-                    // since we don't have a valid context, then we just go back to the home page
-                    return Redirect("~/");
-                }
+
+                // since we don't have a valid context, then we just go back to the home page
+                return Redirect("~/");
             }
 
             if (ModelState.IsValid)
@@ -129,12 +127,12 @@ namespace IdentityServer4.Quickstart.UI
                     };
 
                     // issue authentication cookie with subject ID and username
-                    var isuser = new IdentityServerUser(user.SubjectId)
+                    var issuer = new IdentityServerUser(user.SubjectId)
                     {
                         DisplayName = user.Username
                     };
 
-                    await HttpContext.SignInAsync(isuser, props);
+                    await HttpContext.SignInAsync(issuer, props);
                     
                     if (context != null)
                     {
@@ -142,7 +140,7 @@ namespace IdentityServer4.Quickstart.UI
                         {
                             // if the client is PKCE then we assume it's native, so this change in how to
                             // return the response is for better UX for the end user.
-                            return this.LoadingPage("Redirect", model.ReturnUrl);
+                            // return this.LoadingPage("Redirect", model.ReturnUrl);
                         }
 
                         // we can trust model.ReturnUrl since GetAuthorizationContextAsync returned non-null
@@ -154,15 +152,14 @@ namespace IdentityServer4.Quickstart.UI
                     {
                         return Redirect(model.ReturnUrl);
                     }
-                    else if (string.IsNullOrEmpty(model.ReturnUrl))
+
+                    if (string.IsNullOrEmpty(model.ReturnUrl))
                     {
                         return Redirect("~/");
                     }
-                    else
-                    {
-                        // user might have clicked on a malicious link - should be logged
-                        throw new Exception("invalid return URL");
-                    }
+
+                    // user might have clicked on a malicious link - should be logged
+                    throw new Exception("invalid return URL");
                 }
 
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials", clientId:context?.ClientId));
@@ -243,14 +240,14 @@ namespace IdentityServer4.Quickstart.UI
             var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
             if (context?.IdP != null && await _schemeProvider.GetSchemeAsync(context.IdP) != null)
             {
-                var local = context.IdP == IdentityServer4.IdentityServerConstants.LocalIdentityProvider;
+                var local = context.IdP == IdentityServerConstants.LocalIdentityProvider;
 
                 // this is meant to short circuit the UI and only trigger the one external IdP
                 var vm = new LoginViewModel
                 {
                     EnableLocalLogin = local,
                     ReturnUrl = returnUrl,
-                    Username = context?.LoginHint,
+                    Username = context?.LoginHint
                 };
 
                 if (!local)
@@ -264,9 +261,7 @@ namespace IdentityServer4.Quickstart.UI
             var schemes = await _schemeProvider.GetAllSchemesAsync();
 
             var providers = schemes
-                .Where(x => x.DisplayName != null ||
-                            (x.Name.Equals(AccountOptions.WindowsAuthenticationSchemeName, StringComparison.OrdinalIgnoreCase))
-                )
+                .Where(x => x.DisplayName != null)
                 .Select(x => new ExternalProvider
                 {
                     DisplayName = x.DisplayName ?? x.Name,
@@ -347,7 +342,7 @@ namespace IdentityServer4.Quickstart.UI
             if (User?.Identity.IsAuthenticated == true)
             {
                 var idp = User.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-                if (idp != null && idp != IdentityServer4.IdentityServerConstants.LocalIdentityProvider)
+                if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
                 {
                     var providerSupportsSignout = await HttpContext.GetSchemeSupportsSignOutAsync(idp);
                     if (providerSupportsSignout)

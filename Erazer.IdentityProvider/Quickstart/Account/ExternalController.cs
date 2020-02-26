@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Services;
@@ -8,12 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
 
 namespace IdentityServer4.Quickstart.UI
 {
@@ -48,7 +47,7 @@ namespace IdentityServer4.Quickstart.UI
         /// initiate roundtrip to external authentication provider
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> Challenge(string provider, string returnUrl)
+        public IActionResult Challenge(string provider, string returnUrl)
         {
             if (string.IsNullOrEmpty(returnUrl)) returnUrl = "~/";
 
@@ -59,26 +58,18 @@ namespace IdentityServer4.Quickstart.UI
                 throw new Exception("invalid return URL");
             }
 
-            if (AccountOptions.WindowsAuthenticationSchemeName == provider)
+            // start challenge and roundtrip the return URL and scheme 
+            var props = new AuthenticationProperties
             {
-                // windows authentication needs special handling
-                return await ProcessWindowsLoginAsync(returnUrl);
-            }
-            else
-            {
-                // start challenge and roundtrip the return URL and scheme 
-                var props = new AuthenticationProperties
+                RedirectUri = Url.Action(nameof(Callback)),
+                Items =
                 {
-                    RedirectUri = Url.Action(nameof(Callback)),
-                    Items =
-                    {
-                        { "returnUrl", returnUrl },
-                        { "scheme", provider },
-                    }
-                };
+                    { "returnUrl", returnUrl },
+                    { "scheme", provider }
+                }
+            };
 
-                return Challenge(props, provider);
-            }
+            return Challenge(props, provider);
         }
 
         /// <summary>
@@ -88,7 +79,7 @@ namespace IdentityServer4.Quickstart.UI
         public async Task<IActionResult> Callback()
         {
             // read external identity from the temporary cookie
-            var result = await HttpContext.AuthenticateAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            var result = await HttpContext.AuthenticateAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
             if (result?.Succeeded != true)
             {
                 throw new Exception("External authentication error");
@@ -120,17 +111,17 @@ namespace IdentityServer4.Quickstart.UI
             //ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
 
             // issue authentication cookie for user
-            var isuser = new IdentityServerUser(user.SubjectId)
+            var issuer = new IdentityServerUser(user.SubjectId)
             {
                 DisplayName = user.Username,
                 IdentityProvider = provider,
                 AdditionalClaims = additionalLocalClaims
             };
 
-            await HttpContext.SignInAsync(isuser, localSignInProps);
+            await HttpContext.SignInAsync(issuer, localSignInProps);
 
             // delete temporary cookie used during external authentication
-            await HttpContext.SignOutAsync(IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme);
+            await HttpContext.SignOutAsync(IdentityServerConstants.ExternalCookieAuthenticationScheme);
 
             // retrieve return URL
             var returnUrl = result.Properties.Items["returnUrl"] ?? "~/";
@@ -150,53 +141,6 @@ namespace IdentityServer4.Quickstart.UI
             }
 
             return Redirect(returnUrl);
-        }
-
-        private async Task<IActionResult> ProcessWindowsLoginAsync(string returnUrl)
-        {
-            // see if windows auth has already been requested and succeeded
-            var result = await HttpContext.AuthenticateAsync(AccountOptions.WindowsAuthenticationSchemeName);
-            if (result?.Principal is WindowsPrincipal wp)
-            {
-                // we will issue the external cookie and then redirect the
-                // user back to the external callback, in essence, treating windows
-                // auth the same as any other external authentication mechanism
-                var props = new AuthenticationProperties()
-                {
-                    RedirectUri = Url.Action("Callback"),
-                    Items =
-                    {
-                        { "returnUrl", returnUrl },
-                        { "scheme", AccountOptions.WindowsAuthenticationSchemeName },
-                    }
-                };
-
-                var id = new ClaimsIdentity(AccountOptions.WindowsAuthenticationSchemeName);
-                id.AddClaim(new Claim(JwtClaimTypes.Subject, wp.FindFirst(ClaimTypes.PrimarySid).Value));
-                id.AddClaim(new Claim(JwtClaimTypes.Name, wp.Identity.Name));
-
-                // add the groups as claims -- be careful if the number of groups is too large
-                if (AccountOptions.IncludeWindowsGroups)
-                {
-                    var wi = wp.Identity as WindowsIdentity;
-                    var groups = wi.Groups.Translate(typeof(NTAccount));
-                    var roles = groups.Select(x => new Claim(JwtClaimTypes.Role, x.Value));
-                    id.AddClaims(roles);
-                }
-
-                await HttpContext.SignInAsync(
-                    IdentityServer4.IdentityServerConstants.ExternalCookieAuthenticationScheme,
-                    new ClaimsPrincipal(id),
-                    props);
-                return Redirect(props.RedirectUri);
-            }
-            else
-            {
-                // trigger windows auth
-                // since windows auth don't support the redirect uri,
-                // this URL is re-triggered when we call challenge
-                return Challenge(AccountOptions.WindowsAuthenticationSchemeName);
-            }
         }
 
         private (TestUser user, string provider, string providerUserId, IEnumerable<Claim> claims) FindUserFromExternalProvider(AuthenticateResult result)

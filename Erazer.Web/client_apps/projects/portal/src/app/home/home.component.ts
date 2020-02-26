@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
 import { Observable } from 'rxjs';
 import { ResultModel } from '../models/result';
+import { startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +15,7 @@ export class HomeComponent implements OnInit {
   constructor(private service: HomeService) { }
 
   ngOnInit() {
-    this.results = this.service.getResults();
+    // TODO Create custom RxJS pipe
+    this.results = this.service.getResults().pipe(startWith([undefined, undefined]));
   }
 }

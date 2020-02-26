@@ -1,7 +1,6 @@
 ﻿using System;
 using Erazer.IdentityProvider.Profile;
 using Erazer.IdentityProvider.Session;
-using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -46,7 +45,7 @@ namespace Erazer.IdentityProvider
 
             builder.AddInMemoryIdentityResources(Config.GetIdentityResources());
             builder.AddInMemoryApiResources(Config.GetApis());
-            builder.AddInMemoryClients(Config.GetClients(hostname));
+            builder.AddInMemoryClients(Config.GetClients(Configuration));
             builder.AddTestUsers(TestUsers.Users);
             builder.AddInMemoryPersistedGrants();
 
@@ -82,6 +81,15 @@ namespace Erazer.IdentityProvider
                         .AllowAnyMethod()
                         .AllowCredentials()
                     );
+            }
+            else
+            {
+                app.UseCors(c =>
+                    c.WithOrigins(Configuration["nodejs_hostname"])
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                );
             }
 
             app.UseStaticFiles();
