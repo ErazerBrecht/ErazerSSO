@@ -183,6 +183,39 @@
           }
         }
       }
+    },
+    "lib": {
+      "root": "projects/lib",
+      "sourceRoot": "projects/lib/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/lib/tsconfig.lib.json",
+            "project": "projects/lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "project": "projects/lib/ng-package.prod.json",
+              "tsConfig": "projects/lib/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/lib/tsconfig.lib.json",
+              "projects/lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "portal"

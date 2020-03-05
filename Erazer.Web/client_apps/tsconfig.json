@@ -21,7 +21,7 @@
     ],
     "paths": {     
       "angular-oauth2-oidc": [
-        "projects/angular-oidc/src/public_api"
+        "projects/lib/src/public_api"
       ]
       
     }
