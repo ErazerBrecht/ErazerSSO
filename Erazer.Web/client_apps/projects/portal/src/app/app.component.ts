@@ -9,7 +9,7 @@ export class AppComponent {
   constructor() { }
 
   onLogout() {
-    localStorage.clear();
+    sessionStorage.clear();
     window.location.href = "/auth/logout"
 
   }

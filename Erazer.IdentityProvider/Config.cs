@@ -91,7 +91,7 @@ namespace Erazer.IdentityProvider
                     ClientId = "angular",
                     ClientName = "ErazerSSO Angular",
 
-                    AccessTokenLifetime = 300,
+                    AccessTokenLifetime = 90,
                     AllowOfflineAccess = false,
 
                     RequireClientSecret = false,
@@ -100,8 +100,8 @@ namespace Erazer.IdentityProvider
                     RequireConsent = false,
                     RedirectUris = new[]
                     {
-                        $"{nodejsHostname}/portal/index.html",
-                        $"{nodejsHostname}/portal/silent-refresh.html"
+                        $"{nodejsHostname}/index.html",
+                        $"{nodejsHostname}/silent-refresh.html"
                     },
 
                     AllowedScopes = {"openid", "profile", "api"}

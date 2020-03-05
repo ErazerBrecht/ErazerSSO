@@ -183,38 +183,6 @@
           }
         }
       }
-    },
-    "angular-oidc": {
-      "root": "projects/angular-oidc",
-      "sourceRoot": "projects/angular-oidc/src",
-      "projectType": "library",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
-          "options": {
-            "tsConfig": "projects/angular-oidc/tsconfig.lib.json",
-            "project": "projects/angular-oidc/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "project": "projects/angular-oidc/ng-package.prod.json"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/angular-oidc/tsconfig.lib.json",
-              "projects/angular-oidc/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        }
-      }
     }
   },
   "defaultProject": "portal"

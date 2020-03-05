@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  host: 'https://erazersso-api.herokuapp.com'
+  host: 'https://api.erazerbrecht.me'
 };

@@ -8,6 +8,7 @@ using Erazer.API.Session;
 using Erazer.API.Session.AuthenticationHandlers;
 using Erazer.API.Session.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -26,7 +27,8 @@ namespace Erazer.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddCloudflareForwardHeaderOptions();
+            
             services.AddScoped<ISessionService, SessionService>();
             services.AddHttpContextAccessor();
 
@@ -43,6 +45,7 @@ namespace Erazer.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
             app.UseSerilogRequestLogging();
 
             if (env.IsDevelopment())
@@ -53,8 +56,8 @@ namespace Erazer.API
             }
             else
             {
-                app.UseCors(builder =>
-                    builder.WithOrigins($"{_configuration["nodejs_hostname"]}").AllowAnyHeader().AllowAnyMethod());
+                app.UseCors(builder => builder.WithOrigins($"{_configuration["nodejs_hostname"]}")
+                    .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             }
             
             app.UseRouting();

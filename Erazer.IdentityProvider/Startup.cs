@@ -26,10 +26,9 @@ namespace Erazer.IdentityProvider
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var hostname = Configuration["baseUrl"];
-
             services.AddControllersWithViews();
-            
+            services.AddCloudflareForwardHeaderOptions();
+
             var builder = services.AddIdentityServer(options =>
             {
                 options.Authentication.CookieLifetime = TimeSpan.FromHours(12);
@@ -56,7 +55,7 @@ namespace Erazer.IdentityProvider
             services.AddAuthentication("Erazer.SSO.CookiePlusSession.Authentication")
                 .AddScheme<CookieAuthenticationOptions, CookieSessionAuthenticationHandler>(
                     "Erazer.SSO.CookiePlusSession.Authentication", x => x.Cookie.Name = "Erazer.SSO.WebSession");
-            
+
             if (Environment.IsDevelopment())
             {
                 builder.AddDeveloperSigningCredential();
@@ -70,6 +69,7 @@ namespace Erazer.IdentityProvider
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseForwardedHeaders();
             app.UseSerilogRequestLogging();
 
             if (Environment.IsDevelopment())
@@ -80,7 +80,7 @@ namespace Erazer.IdentityProvider
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()
-                    );
+                );
             }
             else
             {

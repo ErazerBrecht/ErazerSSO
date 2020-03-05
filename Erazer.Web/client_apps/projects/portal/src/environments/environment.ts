@@ -6,8 +6,9 @@
 // IMPORTANT: In a real environment the secret values (password & client_secret) would be loaded by dotenv or something similiar!!
 // They shouldn't be commited into vcs!!
 export const environment = {
-  production: false, 
-  host: 'localhost',
+  production: true, 
+  api: 'http://localhost:5002/api',
+  idsrv: 'http://localhost:5000',
   username: 'alice',                
   password: 'alice',                
   client_id: 'angular_dev',

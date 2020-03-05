@@ -6,10 +6,10 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class HomeService {
-  private baseUrl;
+  private baseUrl: string;
 
   constructor(private http: HttpClient) {
-    this.baseUrl = `http://${environment.host}:5002/api`;
+    this.baseUrl = environment.api;
    }
 
   public getResults(): Observable<Array<ResultModel>> {

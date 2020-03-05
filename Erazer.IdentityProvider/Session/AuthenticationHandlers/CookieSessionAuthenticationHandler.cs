@@ -197,7 +197,8 @@ namespace Erazer.IdentityProvider.Session
             {
                 RequestRefresh(result.Ticket, context.Principal);
             }
-            
+
+            var session = await _session.GetSession();
             var cookieSessionKey = context.Principal.Claims.SingleOrDefault(c => c.Type == SessionKeyClaim);
             
             if (string.IsNullOrEmpty(cookieSessionKey?.Value))
@@ -205,7 +206,7 @@ namespace Erazer.IdentityProvider.Session
                 return AuthenticateResult.Fail("No session key inside the principal.");
             }
             
-            if (!await _session.HasValidSession(cookieSessionKey.Value))
+            if (!_session.IsValidSession(session, cookieSessionKey.Value))
             {
                 return AuthenticateResult.Fail("Incorrect session for current principal.");
             }

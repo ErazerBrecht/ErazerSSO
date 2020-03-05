@@ -1,9 +1,9 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
-using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Erazer.IdentityProvider.Session
 {
@@ -11,19 +11,22 @@ namespace Erazer.IdentityProvider.Session
     {
         Task<string> StartSession(string identityId);
         Task<Session> GetSession();
-        Task<bool> HasValidSession(string key);
+        bool IsValidSession(Session session, string key);
+        bool IsActiveSession(Session session);
         Task End();
     }
     
     public class SessionService: ISessionService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
         private readonly ISessionStore _store;
         
-        public SessionService(ISessionStore store, IHttpContextAccessor httpContextAccessor)
+        public SessionService(ISessionStore store, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
         
         public async Task<string> StartSession(string identityId)
@@ -42,12 +45,17 @@ namespace Erazer.IdentityProvider.Session
             };
                 
             await _store.Upsert(session);
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("Erazer.SSO.SessionId", key, new CookieOptions
+
+            var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Expires = DateTimeOffset.Now.AddMonths(3)
-            });
+            };
 
+            if (!string.IsNullOrWhiteSpace(_configuration["cookie_domain"]))
+                cookieOptions.Domain = _configuration["cookie_domain"];
+            
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("Erazer.SSO.SessionId", key, cookieOptions);
             return key;
         }
 
@@ -62,15 +70,19 @@ namespace Erazer.IdentityProvider.Session
             return _store.Get(hashedSessionId);
         }
 
-        public async Task<bool> HasValidSession(string key)
+        public bool IsValidSession(Session session, string key)
         {
-            var session = await GetSession();
-            
             if (string.IsNullOrWhiteSpace(key) || session == null)
                 return false;
 
             var hashedKey = key;                            // TODO Hash
-            return session.End > DateTimeOffset.UtcNow && hashedKey == session.HashedKey;
+            return IsActiveSession(session) && hashedKey == session.HashedKey;
+        }
+
+        public bool IsActiveSession(Session session)
+        {
+            var ipAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString(); 
+            return session.End > DateTimeOffset.UtcNow && session.IpAddress == ipAddress;
         }
 
         public async Task End()

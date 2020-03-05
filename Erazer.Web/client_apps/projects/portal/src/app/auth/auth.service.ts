@@ -1,5 +1,5 @@
 import { Injectable, isDevMode } from '@angular/core';
-import { JwksValidationHandler, OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
+import { OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { authConfig } from './auth.config';
 import { environment } from '../../environments/environment';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
@@ -34,7 +34,7 @@ export class InitialAuthService {
             }
 
             this.http
-                .post<string>('http://localhost:5000/connect/token', tokenRequest.toString(), httpOptions)
+                .post<string>(`${this.getEnv('idsrv')}/connect/token`, tokenRequest.toString(), httpOptions)
                 .toPromise()
                 .then((data: any) => {
                     sessionStorage.setItem('access_token', data.access_token);
@@ -49,7 +49,7 @@ export class InitialAuthService {
             // setup oauthService
             this.oauthService.configure(authConfig);
             this.oauthService.setStorage(sessionStorage);
-            this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+            // this.oauthService.tokenValidationHandler = new JwksValidationHandler();
 
             this.oauthService.events.subscribe(event => {
                 if (event instanceof OAuthErrorEvent) {
@@ -65,7 +65,6 @@ export class InitialAuthService {
                     this.oauthService.setupAutomaticSilentRefresh();
                     resolveFn();
                 } else {
-                    this.oauthService.initLoginFlow();
                     rejectFn();
                 }
             });

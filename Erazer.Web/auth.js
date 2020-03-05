@@ -1,20 +1,27 @@
 const session = require('express-session');
+const Redis = require("ioredis");
 const redisStore = require('connect-redis')(session);
 const url = require('url');
 const passport = require('passport');
-const { Issuer, Strategy } = require('openid-client');
+const { Issuer, Strategy, custom } = require('openid-client');
 
 // Initialize passport/auth settings
 module.exports = async (app) => {
     const config = app.get('config');
     const host = config.host;
+    const redisClient = new Redis(config.redis);
 
     // Get oidc information from authorization server (like the token endpoint, ...)
     // Setup client with client_id & client_secret => TODO move client_secret out of vcs!
     const issuer = await Issuer.discover(config.idsrv);
     const client = new issuer.Client({ client_id: 'nodejs', client_secret: 'C1C47B06-7E3B-41D6-BB2D-F4DF245DBF7C' });
-    const oidc = { issuer, client };
+    client[custom.clock_tolerance] = 5;
+    client[custom.http_options] = function (options) {
+        options.timeout = 15000;
+        return options;
+    };
 
+    const oidc = { issuer, client };
     app.set('config', Object.assign(config, oidc));
 
     // We don't store any user infomation in a seperate db...
@@ -34,8 +41,8 @@ module.exports = async (app) => {
     }));
 
     app.use(session({
-        store: new redisStore({ host: config.redis, port: '6380' }),
-        secret: 'tutorialsecret',
+        store: new redisStore({ client: redisClient }),
+        secret: '8tJbS2kGdzFCLHtMujnkM94fPA7A9t33MqAcJCMbapmTLPVcDJ86WJr9kBHCFQ3FbV2p',
         cookie: { sameSite: 'strict' },
         name: 'Erazer.Web',
         resave: false,
@@ -60,9 +67,9 @@ module.exports = async (app) => {
                     post_logout_redirect_uri: host
                 },
             })));
+        } else {
+            res.redirect(logoutUrl);
         }
-
-        res.redirect(logoutUrl);
     });
 
     // Destroys the user session
@@ -96,13 +103,25 @@ module.exports = async (app) => {
     // Callback (the authorization server redirects to this endpoint if the authorization succeeded)
     // Will redirect the user to the dashboard page 
     // Uses the 'state' property to redirec the user to a 'angular' route.
-    app.get('/auth/signin-oidc', (req, res) => {
+    app.get('/auth/signin-oidc', (req, res, next) => {
         let successRedirect = '/auth/dashboard';
 
         // TODO ASK KIERAN IF SECURE
         if (req.query.state && !req.query.state.includes('-'))
             successRedirect += `?redirect=${req.query.state}`;
 
-        passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
+        // passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
+
+        passport.authenticate('oidc', function (err, user) {
+            console.log('ERROR: ' + err);
+            console.log('USER '+ JSON.stringify(user));
+
+            if (err) { return next(err); }
+            if (!user) { return res.redirect('/auth/logout/local'); }
+            req.logIn(user, function (err) {
+                if (err) { return next(err); }
+                return res.redirect(successRedirect);
+            });
+        })(req, res, next);
     });
 }
