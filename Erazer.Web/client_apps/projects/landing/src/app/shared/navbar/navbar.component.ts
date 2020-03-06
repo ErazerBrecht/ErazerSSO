@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Renderer, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, ElementRef, Inject, PLATFORM_ID, Renderer2 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
@@ -11,7 +11,7 @@ export class NavbarComponent implements OnInit {
     private sidebarVisible: boolean;
     private isBrowser: boolean;
 
-    constructor(@Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer, private element: ElementRef) {
+    constructor(@Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer2, private element: ElementRef) {
         this.sidebarVisible = false;
         this.isBrowser = isPlatformBrowser(this.platformId);
     }
@@ -22,12 +22,13 @@ export class NavbarComponent implements OnInit {
             this.toggleButton = el.getElementsByClassName('navbar-toggler')[0];
             const navbar = el.getElementsByTagName('nav')[0];
 
-            this.renderer.listenGlobal('window', 'scroll', () => {
+            this.renderer.listen('window', 'scroll', () => {
                 const number = window.scrollY;
                 if (number > 150 || window.pageYOffset > 150) {
                     // add logic
                     navbar.classList.remove('navbar-transparent');
-                } else {
+                }
+                else {
                     // remove logic
                     navbar.classList.add('navbar-transparent');
                 }
