@@ -17,7 +17,8 @@ export class TokenInterceptor implements HttpInterceptor {
 
     handle401Error() {
         if (isDevMode()) {
-            alert('This should not happen!');       // TODO
+            alert('Session expired/invalid! Press OK to restart a refresh');
+            location.reload();
             return throwError('Expiration!!');
         }
         else {

@@ -17,58 +17,56 @@ export class InitialAuthService {
         return this.initProd();
     }
 
-    private initDev() {
-        return new Promise((resolveFn, rejectFn) => {
-            const tokenRequest = new URLSearchParams();
+    private async initDev() {
+        const tokenRequest = new URLSearchParams();
 
-            tokenRequest.set('grant_type', "password");
-            tokenRequest.set('username', this.getEnv('username'));
-            tokenRequest.set('password', this.getEnv('password'));
-            tokenRequest.set('client_id', this.getEnv('client_id'));
-            tokenRequest.set('client_secret', this.getEnv('client_secret'));
+        tokenRequest.set('grant_type', "password");
+        tokenRequest.set('username', this.getEnv('username'));
+        tokenRequest.set('password', this.getEnv('password'));
+        tokenRequest.set('client_id', this.getEnv('client_id'));
+        tokenRequest.set('client_secret', this.getEnv('client_secret'));
 
-            const httpOptions = {
-                headers: new HttpHeaders({
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                })
-            }
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/x-www-form-urlencoded'
+            })
+        }
 
-            this.http
-                .post<string>(`${this.getEnv('idsrv')}/connect/token`, tokenRequest.toString(), httpOptions)
-                .toPromise()
-                .then((data: any) => {
-                    sessionStorage.setItem('access_token', data.access_token);
-                    resolveFn();
-                })
-                .catch((err: any) => rejectFn(err));
-        });
+        try {
+            const data = await this.http
+                .post<any>(`${this.getEnv('idsrv')}/connect/token`, tokenRequest.toString(), httpOptions)
+                .toPromise();
+
+            sessionStorage.setItem('access_token', data.access_token);
+        }
+        catch (err) {
+            // TODO This doesn't log find out why...
+            console.error(err);
+            throw err;
+        }
     }
 
-    private initProd(): Promise<any> {
-        return new Promise((resolveFn, rejectFn) => {
-            // setup oauthService
-            this.oauthService.configure(authConfig);
-            this.oauthService.setStorage(sessionStorage);
-            // this.oauthService.tokenValidationHandler = new JwksValidationHandler();
+    private async initProd(): Promise<any> {
+        // setup oauthService
+        this.oauthService.configure(authConfig);
+        this.oauthService.setStorage(sessionStorage);
 
-            this.oauthService.events.subscribe(event => {
-                if (event instanceof OAuthErrorEvent) {
-                    console.error(event);
-                    sessionStorage.clear();
-                    window.location.href = "/auth/logout/local";
-                }
-            });
-
-            // continue initializing app (provoking a token_received event) or redirect to login-page
-            this.oauthService.loadDiscoveryDocumentAndLogin().then(isLoggedIn => {
-                if (isLoggedIn) {
-                    this.oauthService.setupAutomaticSilentRefresh();
-                    resolveFn();
-                } else {
-                    rejectFn();
-                }
-            });
+        this.oauthService.events.subscribe(event => {
+            if (event instanceof OAuthErrorEvent) {
+                console.error(event);
+                sessionStorage.clear();
+                window.location.href = "/auth/logout/local";
+            }
         });
+
+        // continue initializing app (provoking a token_received event) or redirect to login-page
+        const isLoggedIn = await this.oauthService.loadDiscoveryDocumentAndLogin();
+        if (isLoggedIn) {
+            this.oauthService.setupAutomaticSilentRefresh();
+        } else {
+            console.log('User is not logged in...');
+            throw new Error('Not logged in user -> Redirect to login page');
+        }
     }
 
     private getEnv(name: string) {
@@ -76,6 +74,4 @@ export class InitialAuthService {
             return environment[name];
         throw Error('Environment variable is not defined!');
     }
-
-
 }

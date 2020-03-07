@@ -8,6 +8,7 @@ using Erazer.API.Session;
 using Erazer.API.Session.AuthenticationHandlers;
 using Erazer.API.Session.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -28,7 +29,7 @@ namespace Erazer.API
         {
             services.AddControllers();
             services.AddCloudflareForwardHeaderOptions();
-            
+
             services.AddScoped<ISessionService, SessionService>();
             services.AddHttpContextAccessor();
 
@@ -51,7 +52,7 @@ namespace Erazer.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(builder => builder.WithOrigins("http://localhost:8888", "http://localhost:4201")
+                app.UseCors(builder => builder.WithOrigins("http://localhost:8888", "http://localhost:4200", "http://localhost:4201")
                     .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             }
             else
@@ -59,7 +60,7 @@ namespace Erazer.API
                 app.UseCors(builder => builder.WithOrigins($"{_configuration["nodejs_hostname"]}")
                     .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             }
-            
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

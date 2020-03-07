@@ -27,7 +27,8 @@ namespace Erazer.IdentityProvider
         {
             return new ApiResource[]
             {
-                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"})
+                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"}),
+                new ApiResource("api:dev", "DEV API access", new List<string> {JwtClaimTypes.Role})
             };
         }
 
@@ -62,7 +63,7 @@ namespace Erazer.IdentityProvider
                     RefreshTokenExpiration = TokenExpiration.Absolute,
                     RefreshTokenUsage = TokenUsage.ReUse,
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "api1"}
+                    AllowedScopes = {"openid", "profile", "api"}
                 },
 
                 // New client (NodeJS) using 'code authorization'
@@ -118,7 +119,7 @@ namespace Erazer.IdentityProvider
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     ClientSecrets = {new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256())},
 
-                    AllowedScopes = {"openid", "profile", "role", "api"}
+                    AllowedScopes = {"openid", "profile", "api"}
                 },
                 new Client
                 {

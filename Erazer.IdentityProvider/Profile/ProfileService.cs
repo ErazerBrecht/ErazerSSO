@@ -27,10 +27,24 @@ namespace Erazer.IdentityProvider.Profile
         {
             await base.GetProfileDataAsync(context);
 
+ 
+            
             if (context.RequestedClaimTypes.Contains("session"))
             {
                 var session = await _session.GetSession();
-                context.IssuedClaims.Add(new Claim("SessionData", JsonConvert.SerializeObject(session), IdentityServerConstants.ClaimValueTypes.Json));
+                if (session != null)
+                {
+                    context.IssuedClaims.Add(new Claim("SessionData", JsonConvert.SerializeObject(session),
+                        IdentityServerConstants.ClaimValueTypes.Json));
+                }
+                else if (context.Client.ClientId == "angular_dev")
+                {
+                    var sessionId = await _session.StartSession(context.Subject.GetSubjectId());
+                    session = await _session.GetSession(sessionId);
+                    
+                    context.IssuedClaims.Add(new Claim("SessionData", JsonConvert.SerializeObject(session),
+                        IdentityServerConstants.ClaimValueTypes.Json));
+                }
             }
         }
 
@@ -46,7 +60,7 @@ namespace Erazer.IdentityProvider.Profile
 
             var user = Users.FindBySubjectId(context.Subject.GetSubjectId());
             context.IsActive = user?.IsActive == true;
-                
+
             if (context.Client.RequirePkce)
             {
                 var session = await _session.GetSession();

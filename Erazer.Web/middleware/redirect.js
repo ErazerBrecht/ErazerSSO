@@ -27,14 +27,16 @@ module.exports = (req, res, next) => {
 function angularRouter(req, res) {
     /* Server-side rendering */
     res.set('Cache-Control', 'public, max-age=3600');
-    res.render('index', { req, res }, (err, html) => {
-        // TODO err handling...
-        const criticalCss = generateCriticalCss(html);
+    res.render('index');
+    // res.render('index', { req, res }, (err, html) => {
+    //     // TODO err handling...
+    //     console.log(html);
+    //     const criticalCss = generateCriticalCss(html);
 
-        const startIndexEndOfHead = html.indexOf('</head>');
-        const htmlWithCss = `${html.slice(0, startIndexEndOfHead)}<style>${criticalCss}</style>${html.slice(startIndexEndOfHead)}`;
-        res.send(htmlWithCss);
-    });
+    //     const startIndexEndOfHead = html.indexOf('</head>');
+    //     const htmlWithCss = `${html.slice(0, startIndexEndOfHead)}<style>${criticalCss}</style>${html.slice(startIndexEndOfHead)}`;
+    //     res.send(htmlWithCss);
+    // });
 }
 
 function generateCriticalCss(html) {

@@ -11,6 +11,7 @@ namespace Erazer.IdentityProvider.Session
     {
         Task<string> StartSession(string identityId);
         Task<Session> GetSession();
+        Task<Session> GetSession(string sessionId);
         bool IsValidSession(Session session, string key);
         bool IsActiveSession(Session session);
         Task End();
@@ -62,10 +63,11 @@ namespace Erazer.IdentityProvider.Session
         public Task<Session> GetSession()
         {
             var hasSession = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("Erazer.SSO.SessionId", out var sessionId);
-
-            if (!hasSession)
-                return Task.FromResult<Session>(null);
-
+            return !hasSession ? Task.FromResult<Session>(null) : GetSession(sessionId);
+        }
+        
+        public Task<Session> GetSession(string sessionId)
+        {
             var hashedSessionId = sessionId;                // TODO Hash
             return _store.Get(hashedSessionId);
         }
