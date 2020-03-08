@@ -110,18 +110,6 @@ module.exports = async (app) => {
         if (req.query.state && !req.query.state.includes('-'))
             successRedirect += `?redirect=${req.query.state}`;
 
-        // passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
-
-        passport.authenticate('oidc', function (err, user) {
-            console.log('ERROR: ' + err);
-            console.log('USER '+ JSON.stringify(user));
-
-            if (err) { return next(err); }
-            if (!user) { return res.redirect('/auth/logout/local'); }
-            req.logIn(user, function (err) {
-                if (err) { return next(err); }
-                return res.redirect(successRedirect);
-            });
-        })(req, res, next);
+        passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
     });
 }

@@ -6,7 +6,7 @@
     "ng": "ng",
     "start:landing": "ng serve landing --port 4200",
     "start:portal": "ng serve portal --port 4201",
-    "release:landing": "ng build landing --prod && ng run landing:server:production --bundleDependencies all",
+    "release:landing": "ng build landing --prod && ng run landing:server:production --bundleDependencies true",
     "release:portal": "ng build portal --prod --base-href /portal/",
     "release": "npm run release:landing && npm run release:portal",
     "lint": "ng lint"
