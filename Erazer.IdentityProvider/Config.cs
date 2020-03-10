@@ -27,8 +27,7 @@ namespace Erazer.IdentityProvider
         {
             return new ApiResource[]
             {
-                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"}),
-                new ApiResource("api:dev", "DEV API access", new List<string> {JwtClaimTypes.Role})
+                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"})
             };
         }
 
@@ -101,8 +100,8 @@ namespace Erazer.IdentityProvider
                     RequireConsent = false,
                     RedirectUris = new[]
                     {
-                        $"{nodejsHostname}/index.html",
-                        $"{nodejsHostname}/silent-refresh.html"
+                        $"{nodejsHostname}/portal/index.html",
+                        $"{nodejsHostname}/portal/silent-refresh.html"
                     },
 
                     AllowedScopes = {"openid", "profile", "api"}

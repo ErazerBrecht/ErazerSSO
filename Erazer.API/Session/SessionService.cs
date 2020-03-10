@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Erazer.API.Session.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -31,7 +32,7 @@ namespace Erazer.API.Session
             if (!hasSession) 
                 return false;
             
-            var hashedSessionId = sessionId; // TODO Hash
+            var hashedSessionId = sessionId.ToSha512();
             var sessionData = principal.Claims.SingleOrDefault(c => c.Type == "SessionData");
             var subjectId = principal.Claims.SingleOrDefault(c => c.Type == "sub")?.Value;
             var currentIpAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();

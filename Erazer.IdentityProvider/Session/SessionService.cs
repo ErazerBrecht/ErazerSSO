@@ -2,7 +2,8 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+ using Erazer.IdentityProvider.Session.Helpers;
+ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Erazer.IdentityProvider.Session
@@ -33,14 +34,13 @@ namespace Erazer.IdentityProvider.Session
         public async Task<string> StartSession(string identityId)
         {
             var key = GenerateKey();
-            var hashedKey = key;                            // TODO Hash the key
 
             var session = new Session
             {
                 IdentityId = identityId,
-                HashedKey = hashedKey,
+                HashedKey = key.ToSha512(),
                 Start = DateTimeOffset.UtcNow,
-                End = DateTimeOffset.UtcNow.AddHours(12),          // TODO Get expire time cookie from options
+                End = DateTimeOffset.UtcNow.AddMonths(3),          // TODO Get expire time cookie from options
                 IpAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString(),
                 UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].FirstOrDefault()
             };
@@ -50,7 +50,7 @@ namespace Erazer.IdentityProvider.Session
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                Expires = DateTimeOffset.Now.AddMonths(3)
+                Expires = session.End
             };
 
             if (!string.IsNullOrWhiteSpace(_configuration["cookie_domain"]))
@@ -68,7 +68,7 @@ namespace Erazer.IdentityProvider.Session
         
         public Task<Session> GetSession(string sessionId)
         {
-            var hashedSessionId = sessionId;                // TODO Hash
+            var hashedSessionId = sessionId.ToSha512();
             return _store.Get(hashedSessionId);
         }
 
@@ -77,7 +77,7 @@ namespace Erazer.IdentityProvider.Session
             if (string.IsNullOrWhiteSpace(key) || session == null)
                 return false;
 
-            var hashedKey = key;                            // TODO Hash
+            var hashedKey = key.ToSha512();
             return IsActiveSession(session) && hashedKey == session.HashedKey;
         }
 
@@ -93,7 +93,7 @@ namespace Erazer.IdentityProvider.Session
 
             if (hasSession)
             {
-                var hashedSessionId = sessionId;            // TODO Hash
+                var hashedSessionId = sessionId.ToSha512();
                 var session = await _store.Get(hashedSessionId);
 
                 if (session?.End > DateTimeOffset.UtcNow)
