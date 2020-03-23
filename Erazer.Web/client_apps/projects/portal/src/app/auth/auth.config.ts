@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 export const authConfig: AuthConfig = {
     issuer: environment.idsrv,
     redirectUri: document.getElementsByTagName('base')[0].href + 'index.html',
+    useSilentRefresh: true,
     silentRefreshRedirectUri: document.getElementsByTagName('base')[0].href + 'silent-refresh.html',
     clientId: 'angular',
     responseType: 'code',

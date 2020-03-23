@@ -29,7 +29,6 @@ function angularRouter(req, res) {
     res.set('Cache-Control', 'public, max-age=3600');
     res.render('index', { req, res }, (err, html) => {
         // TODO err handling...
-        console.log(html);
         const criticalCss = generateCriticalCss(html);
 
         const startIndexEndOfHead = html.indexOf('</head>');
