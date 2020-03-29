@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Erazer.IdentityProvider.Session.Helpers;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -200,12 +201,12 @@ namespace Erazer.IdentityProvider.Session
 
             var session = await _session.GetSession();
             var cookieSessionKey = context.Principal.Claims.SingleOrDefault(c => c.Type == SessionKeyClaim);
-            
+
             if (string.IsNullOrEmpty(cookieSessionKey?.Value))
             {
                 return AuthenticateResult.Fail("No session key inside the principal.");
             }
-            
+
             if (!_session.IsValidSession(session, cookieSessionKey.Value))
             {
                 return AuthenticateResult.Fail("Incorrect session for current principal.");
@@ -317,16 +318,21 @@ namespace Erazer.IdentityProvider.Session
             }
 
             await Events.SigningIn(signInContext);
-            
-            var erazerSsoSessionKey = await _session.StartSession(signInContext.Principal.GetSubjectId());
-            var sessionClaimIdentity = new ClaimsIdentity(signInContext.Principal.Identity);
-            var claim = sessionClaimIdentity.Claims.SingleOrDefault(c => c.Type == SessionKeyClaim);
-            
-            if (claim != null) sessionClaimIdentity.RemoveClaim(claim);
-            sessionClaimIdentity.AddClaim(new Claim(SessionKeyClaim, erazerSsoSessionKey, ClaimValueTypes.String, Options.ClaimsIssuer));
-            
-            signInContext.Principal = new ClaimsPrincipal(sessionClaimIdentity);
-            
+
+            if (signInContext.Properties.ShouldCreateNewSession())
+            {
+               var session = await _session.StartSession(signInContext.Principal.GetSubjectId());
+                
+                var sessionClaimIdentity = new ClaimsIdentity(signInContext.Principal.Identity);
+                var claim = sessionClaimIdentity.Claims.SingleOrDefault(c => c.Type == SessionKeyClaim);
+
+                if (claim != null) sessionClaimIdentity.RemoveClaim(claim);
+                sessionClaimIdentity.AddClaim(new Claim(SessionKeyClaim, session.HashedKey, ClaimValueTypes.String,
+                    Options.ClaimsIssuer));
+
+                signInContext.Principal = new ClaimsPrincipal(sessionClaimIdentity);
+            }
+
             if (signInContext.Properties.IsPersistent)
             {
                 var expiresUtc = signInContext.Properties.ExpiresUtc ?? issuedUtc.Add(Options.ExpireTimeSpan);
@@ -365,7 +371,7 @@ namespace Erazer.IdentityProvider.Session
                 signInContext.Principal,
                 signInContext.Properties,
                 Options);
-            
+
             await Events.SignedIn(signedInContext);
 
             // Only redirect on the login path
@@ -397,7 +403,7 @@ namespace Erazer.IdentityProvider.Session
 
             await Events.SigningOut(context);
             await _session.End();
-            
+
             Options.CookieManager.DeleteCookie(
                 Context,
                 Options.Cookie.Name,
@@ -494,4 +500,3 @@ namespace Erazer.IdentityProvider.Session
         }
     }
 }
-

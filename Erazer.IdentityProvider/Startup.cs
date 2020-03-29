@@ -1,6 +1,8 @@
 ﻿using System;
 using Erazer.IdentityProvider.Profile;
 using Erazer.IdentityProvider.Session;
+using Erazer.IdentityProvider.Session.Helpers;
+using Erazer.IdentityProvider.Session.Stores;
 using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -50,8 +52,8 @@ namespace Erazer.IdentityProvider
 
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<ISessionService, SessionService>();
-            services.AddSingleton<ISessionStore, InMemorySessionStore>();
-
+            services.AddMongoDbSessionStore(Configuration["mongodb_connectionString"]);
+                
             services.AddAuthentication("Erazer.SSO.CookiePlusSession.Authentication")
                 .AddScheme<CookieAuthenticationOptions, CookieSessionAuthenticationHandler>(
                     "Erazer.SSO.CookiePlusSession.Authentication", x => x.Cookie.Name = "Erazer.SSO.WebSession");

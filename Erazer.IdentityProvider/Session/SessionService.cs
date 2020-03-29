@@ -10,11 +10,14 @@ namespace Erazer.IdentityProvider.Session
 {
     public interface ISessionService
     {
-        Task<string> StartSession(string identityId);
+        Task<Session> StartSession(string identityId);
+        
         Task<Session> GetSession();
         Task<Session> GetSession(string sessionId);
-        bool IsValidSession(Session session, string key);
+
         bool IsActiveSession(Session session);
+        bool IsValidSession(Session session, string hashedKey);
+        
         Task End();
     }
     
@@ -31,7 +34,7 @@ namespace Erazer.IdentityProvider.Session
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
         
-        public async Task<string> StartSession(string identityId)
+        public async Task<Session> StartSession(string identityId)
         {
             var key = GenerateKey();
 
@@ -57,34 +60,38 @@ namespace Erazer.IdentityProvider.Session
                 cookieOptions.Domain = _configuration["cookie_domain"];
             
             _httpContextAccessor.HttpContext.Response.Cookies.Append("Erazer.SSO.SessionId", key, cookieOptions);
-            return key;
+            return session;
         }
 
         public Task<Session> GetSession()
         {
             var hasSession = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("Erazer.SSO.SessionId", out var sessionId);
-            return !hasSession ? Task.FromResult<Session>(null) : GetSession(sessionId);
+            return !hasSession ? null : GetSession(sessionId);
         }
-        
+
         public Task<Session> GetSession(string sessionId)
         {
+            if (string.IsNullOrWhiteSpace(sessionId))
+                return Task.FromResult<Session>(null);
+
             var hashedSessionId = sessionId.ToSha512();
             return _store.Get(hashedSessionId);
         }
 
-        public bool IsValidSession(Session session, string key)
-        {
-            if (string.IsNullOrWhiteSpace(key) || session == null)
-                return false;
-
-            var hashedKey = key.ToSha512();
-            return IsActiveSession(session) && hashedKey == session.HashedKey;
-        }
-
         public bool IsActiveSession(Session session)
         {
+            if (session == null) return false;
+            
             var ipAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString(); 
             return session.End > DateTimeOffset.UtcNow && session.IpAddress == ipAddress;
+        }
+        
+        public bool IsValidSession(Session session, string hashedKey)
+        {
+            if (string.IsNullOrWhiteSpace(hashedKey) || session == null)
+                return false;
+
+            return IsActiveSession(session) && hashedKey == session.HashedKey;
         }
 
         public async Task End()
@@ -108,13 +115,11 @@ namespace Erazer.IdentityProvider.Session
 
         private static string GenerateKey()
         {
-            using(RandomNumberGenerator rng = new RNGCryptoServiceProvider())
-            {
-                var tokenData = new byte[64];
-                rng.GetBytes(tokenData);
+            using RandomNumberGenerator rng = new RNGCryptoServiceProvider();
+            var tokenData = new byte[128];
+            rng.GetBytes(tokenData);
 
-                return Convert.ToBase64String(tokenData);
-            }
+            return Convert.ToBase64String(tokenData);
         }
     }
 }

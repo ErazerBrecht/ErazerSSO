@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Erazer.IdentityProvider.Session;
+using Erazer.IdentityProvider.Session.Helpers;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -116,7 +117,7 @@ namespace IdentityServer4.Quickstart.UI
 
                     // only set explicit expiration here if user chooses "remember me". 
                     // otherwise we rely upon expiration configured in cookie middleware.
-                    AuthenticationProperties props = null;
+                    var props = new AuthenticationProperties();
                     if (AccountOptions.AllowRememberLogin && model.RememberLogin)
                     {
                         props = new AuthenticationProperties
@@ -124,7 +125,11 @@ namespace IdentityServer4.Quickstart.UI
                             IsPersistent = true,
                             ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
                         };
-                    };
+                    }
+                    
+                    // the user has provided the correct credentials 
+                    // start a new session
+                    props.MarkNewSession();
 
                     // issue authentication cookie with subject ID and username
                     var issuer = new IdentityServerUser(user.SubjectId)
