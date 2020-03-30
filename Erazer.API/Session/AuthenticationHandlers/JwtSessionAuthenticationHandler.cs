@@ -27,7 +27,7 @@ namespace Erazer.API.Session.AuthenticationHandlers
             if (!result.Succeeded)
                 return result;
 
-            var validSession = _session.HasValidSession(result.Principal);
+            var validSession = await _session.HasValidSession(result.Principal);
             return !validSession ? AuthenticateResult.Fail("Invalid combination JWT & Session Cookie") : result;
         }
     }

@@ -2,7 +2,7 @@
 
 namespace Erazer.API.Session
 {
-    public class Session
+    public class SessionModel
     {
         public string HashedKey { get; set; }
         

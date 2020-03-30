@@ -35,15 +35,12 @@ namespace Erazer.IdentityProvider.Profile
                 
                 if (_session.IsActiveSession(session))
                 {
-                    context.IssuedClaims.Add(new Claim("SessionData", JsonConvert.SerializeObject(session),
-                        IdentityServerConstants.ClaimValueTypes.Json));
+                    context.IssuedClaims.Add(new Claim("sessionKey", session.HashedKey));
                 }
                 else if (context.Client.ClientId == "angular_dev")
                 {
                     session = await _session.StartSession(context.Subject.GetSubjectId());
-                    
-                    context.IssuedClaims.Add(new Claim("SessionData", JsonConvert.SerializeObject(session),
-                        IdentityServerConstants.ClaimValueTypes.Json));
+                    context.IssuedClaims.Add(new Claim("sessionKey", session.HashedKey));
                 }
             }
         }

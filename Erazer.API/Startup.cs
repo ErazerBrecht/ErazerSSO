@@ -18,10 +18,12 @@ namespace Erazer.API
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _env = env ?? throw new ArgumentNullException(nameof(env));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -31,25 +33,27 @@ namespace Erazer.API
             services.AddCloudflareForwardHeaderOptions();
 
             services.AddScoped<ISessionService, SessionService>();
+            services.AddMongoDbSessionStore(_configuration["mongodb_connectionString"]);
             services.AddHttpContextAccessor();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication("Bearer")
                 .AddJwtSessionBearer("Bearer", options =>
                 {
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5);
                     options.Authority = $"{_configuration["idsrv_hostname"]}";
-                    options.RequireHttpsMetadata = false;
+                    options.RequireHttpsMetadata = !_env.IsDevelopment();
                     options.Audience = "api";
                 });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseForwardedHeaders();
             app.UseSerilogRequestLogging();
 
-            if (env.IsDevelopment())
+            if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseCors(builder => builder.WithOrigins("http://localhost:8888", "http://localhost:4200", "http://localhost:4201")

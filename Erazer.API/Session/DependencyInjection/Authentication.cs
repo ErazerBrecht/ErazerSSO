@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Erazer.API.Session.DependencyInjection
 {
-    public static class JwtBearerExtensions
+    public static class Authentication
     {
         public static AuthenticationBuilder AddJwtSessionBearer(this AuthenticationBuilder builder, string authenticationScheme, Action<JwtBearerOptions> configureOptions)
         {

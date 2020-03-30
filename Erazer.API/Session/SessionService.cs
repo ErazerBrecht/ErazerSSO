@@ -11,21 +11,23 @@ namespace Erazer.API.Session
 {
     public interface ISessionService
     {
-        bool HasValidSession(ClaimsPrincipal principal);
+        Task<bool> HasValidSession(ClaimsPrincipal principal);
     }
     
     public class SessionService: ISessionService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISessionStore _sessionStore;
         private readonly ILogger<SessionService> _logger;
         
-        public SessionService(IHttpContextAccessor httpContextAccessor, ILogger<SessionService> logger)
+        public SessionService(IHttpContextAccessor httpContextAccessor, ISessionStore sessionStore, ILogger<SessionService> logger)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _sessionStore = sessionStore ?? throw new ArgumentNullException(nameof(sessionStore));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public bool HasValidSession(ClaimsPrincipal principal)
+        public async Task<bool> HasValidSession(ClaimsPrincipal principal)
         {
             var hasSession = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("Erazer.SSO.SessionId", out var sessionId);
 
@@ -33,18 +35,18 @@ namespace Erazer.API.Session
                 return false;
             
             var hashedSessionId = sessionId.ToSha512();
-            var sessionData = principal.Claims.SingleOrDefault(c => c.Type == "SessionData");
+            var sessionKey = principal.Claims.SingleOrDefault(c => c.Type == "sessionKey");
             var subjectId = principal.Claims.SingleOrDefault(c => c.Type == "sub")?.Value;
             var currentIpAddress = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             var currentUserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].FirstOrDefault();
                 
-            if (string.IsNullOrEmpty(sessionData?.Value))
+            if (string.IsNullOrEmpty(sessionKey?.Value))
             {
                 _logger.LogDebug("Session not found, not able to check if the session is valid!");
                 return false;
             }
 
-            var session = JsonConvert.DeserializeObject<Session>(sessionData.Value);
+            var session = await _sessionStore.GetSession(sessionKey);
 
             if (session == null)
             {
@@ -52,15 +54,15 @@ namespace Erazer.API.Session
                 return false;
             }
 
-            if (session.End < DateTimeOffset.UtcNow)
-            {
-                _logger.LogDebug("Session is expired!");
-                return false;
-            }
-
             if (session.HashedKey != hashedSessionId)
             {
                 _logger.LogDebug("Session key doesn't match!");
+                return false;
+            }
+            
+            if (session.End < DateTimeOffset.UtcNow)
+            {
+                _logger.LogDebug("Session is expired!");
                 return false;
             }
 
