@@ -9,6 +9,7 @@ const { Issuer, Strategy, custom } = require('openid-client');
 module.exports = async (app) => {
     const config = app.get('config');
     const host = config.host;
+    const isSecure = !host.startsWith('http://');
     const redisClient = new Redis(config.redis);
 
     // Get oidc information from authorization server (like the token endpoint, ...)
@@ -40,10 +41,14 @@ module.exports = async (app) => {
         return done(null, user);
     }));
 
+    if (isSecure) {
+        app.set('trust proxy', 1) // trust first proxy
+    }
+    
     app.use(session({
         store: new redisStore({ client: redisClient }),
         secret: '8tJbS2kGdzFCLHtMujnkM94fPA7A9t33MqAcJCMbapmTLPVcDJ86WJr9kBHCFQ3FbV2p',
-        cookie: { sameSite: 'strict' },
+        cookie: { sameSite: 'strict', secure: isSecure },
         name: 'Erazer.Web',
         resave: false,
         saveUninitialized: false

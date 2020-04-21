@@ -8,6 +8,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -56,7 +57,13 @@ namespace Erazer.IdentityProvider
                 
             services.AddAuthentication("Erazer.SSO.CookiePlusSession.Authentication")
                 .AddScheme<CookieAuthenticationOptions, CookieSessionAuthenticationHandler>(
-                    "Erazer.SSO.CookiePlusSession.Authentication", x => x.Cookie.Name = "Erazer.SSO.WebSession");
+                    "Erazer.SSO.CookiePlusSession.Authentication", x =>
+                    {
+                        x.Cookie.Name = "Erazer.SSO.WebSession";
+                        x.Cookie.SecurePolicy = Environment.IsProduction()
+                            ? CookieSecurePolicy.Always
+                            : CookieSecurePolicy.SameAsRequest;
+                    });
 
             if (Environment.IsDevelopment())
             {

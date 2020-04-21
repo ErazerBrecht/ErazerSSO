@@ -27,8 +27,6 @@ namespace Erazer.IdentityProvider.Profile
         {
             await base.GetProfileDataAsync(context);
 
- 
-            
             if (context.RequestedClaimTypes.Contains("session"))
             {
                 var session = await _session.GetSession();

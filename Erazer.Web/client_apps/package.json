@@ -18,7 +18,7 @@
     "@angular/compiler": "~9.1.0",
     "@angular/core": "~9.1.0",
     "@angular/forms": "~9.1.0",
-    "@angular/localize": "^9.1.0",
+    "@angular/localize": "~9.1.0",
     "@angular/platform-browser": "~9.1.0",
     "@angular/platform-browser-dynamic": "~9.1.0",
     "@angular/platform-server": "~9.1.0",
@@ -41,8 +41,8 @@
     "@angular/compiler-cli": "~9.1.0",
     "@angular/language-service": "~9.1.0",
     "@types/express-serve-static-core": "~4.17.2",
-    "@types/node": "^12.11.1",
-    "glob-to-regexp": "^0.4.1",
+    "@types/node": "~13.13.1",
+    "glob-to-regexp": "~0.4.1",
     "tslint": "~6.1.0",
     "typescript": "~3.8.3"
   }
