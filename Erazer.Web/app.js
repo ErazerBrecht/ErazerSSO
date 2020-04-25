@@ -2,6 +2,7 @@ const express = require('express')
 const app = express();
 
 const compression = require('compression');
+const netjet = require('netjet');
 const morgan = require('morgan');
 
 const config = require('./config');
@@ -27,6 +28,7 @@ module.exports = new Promise(async (resolve, reject) => {
     app.use(morgan('dev'));
     app.use(compression());
 
+    app.use(netjet());
     app.use(redirectMiddleware);
     app.use(staticfiles(app.get('config').wwwroot));
 
