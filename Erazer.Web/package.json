@@ -9,6 +9,7 @@
     "connect-redis": "~3.3.3",
     "express": "~4.17.1",
     "express-session": "~1.17.0",
+    "glob-to-regexp": "~0.4.1",
     "ioredis": "~4.16.0",
     "mime": "~2.4.4",
     "morgan": "~1.9.1",

@@ -28,7 +28,7 @@ module.exports = new Promise(async (resolve, reject) => {
     app.use(morgan('dev'));
     app.use(compression());
 
-    app.use(netjet());
+    //app.use(netjet());
     app.use(redirectMiddleware);
     app.use(staticfiles(app.get('config').wwwroot));
 

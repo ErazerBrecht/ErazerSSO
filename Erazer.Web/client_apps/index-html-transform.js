@@ -1,6 +1,7 @@
 var globToRegExp = require('glob-to-regexp');
 
 module.exports = (targetOptions, html) => {
+  html = html.replace('type="module"', 'type="module" defer')
   const regexp = globToRegExp('<link rel="stylesheet" href="styles.*css">', { flags: 'g' });
   const startIndexLink = html.search(regexp);
   const contentLink = html.match(regexp)[0];

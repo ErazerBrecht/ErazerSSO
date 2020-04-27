@@ -7,7 +7,7 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - 6380:6379
+      - 6379:6379
   mongo-1:
     image: mongo:4
     container_name: mongo-1
