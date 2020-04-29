@@ -27,7 +27,7 @@ module.exports = (req, res, next) => {
 
 function angularRouter(req, res) {
     /* Server-side rendering */
-    res.set('Cache-Control', 'public, max-age=3600');
+    res.set('Cache-Control', 'public, max-age=15000');
     res.render('index', { req, res }, (err, html) => {
         // TODO err handling...
 
@@ -38,20 +38,20 @@ function angularRouter(req, res) {
 
         // Server push
         const cssRegex = globToRegExp('href="*.css', { flags: 'g' });
-        const cssLinks = htmlWithCss.match(cssRegex).map(x => `</${x.replace('href="', '')}>; rel=preload as=style`);
-        const jsRegex = globToRegExp('src="*.js', { flags: 'g' });
-        const jsLinks = htmlWithCss.match(jsRegex).filter(x => x.includes('es2015')).map(x => `</${x.replace('src="', '')}>; rel=preload as=script`);
+        const cssLinks = htmlWithCss.match(cssRegex).map(x => `</${x.replace('href="', '')}>; rel=preload; as=style;`);
+        // JS doesn't work because type="module" needs "crossorigin" -> Doesn't work with cloudflare
+        //const jsRegex = /src=.[^,]*?\.js/g
+        //const jsLinks = htmlWithCss.match(jsRegex).filter(x => x.includes('es2015')).map(x => `</${x.replace('src="', '')}>; rel=preload; as=script; crossorigin;`);
         const imgRegex = new RegExp('<img[^>]+src="([^">]+)"', 'g');
-        const imgLinks = [...htmlWithCss.matchAll(imgRegex)].map(x => x[1]).map(x => `<${x}>; rel=preload as=image`);
+        const imgLinks = [...htmlWithCss.matchAll(imgRegex)].map(x => x[1]).map(x => `<${x}>; rel=preload; as=image;`);
         const bgImgRegex = /url\('.*\.webp'/g;
-        const bgImgLinks = htmlWithCss.match(bgImgRegex).map(x => x.replace("'", "").replace("url(", "")).map(x => `<${x}>; rel=preload as=image`);
-        const fontRegex =  /url\(.[^,]*?\.woff2/g;
-        const fontLinks = htmlWithCss.match(fontRegex).map(x => x.replace("url(", "/")).map(x => `<${x}>; rel=preload as=font`);
-
-        console.log(cssLinks);
-        console.log(jsLinks);
-        console.log(imgLinks);
-        console.log(bgImgLinks);
+        const bgImgLinks = htmlWithCss.match(bgImgRegex).map(x => x.replace(/'/g, "").replace("url(", "")).map(x => `<${x}>; rel=preload; as=image;`);
+         // Fonts don't work because it needs "crossorigin" -> Doesn't work with cloudflare
+        //const fontRegex =  /url\(.[^,]*?\.woff2/g;
+        //const fontLinks = htmlWithCss.match(fontRegex).map(x => x.replace("url(", "/")).map(x => `<${x}>; rel=preload; as=font; crossorigin;`);
+        //const links = [...cssLinks, ...jsLinks, ...imgLinks, ...bgImgLinks, ...fontLinks];
+        const links = [...cssLinks, ...imgLinks, ...bgImgLinks];
+        res.setHeader('Link', links);
 
         res.send(htmlWithCss);
     });
