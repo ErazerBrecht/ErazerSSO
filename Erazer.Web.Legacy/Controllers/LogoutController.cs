@@ -7,7 +7,7 @@ namespace Erazer.Web.Legacy.Controllers
 {
     public class LogoutController: Controller
     {
-        public LogoutController(ISessionStore session)
+        public LogoutController()
         {
         }
         

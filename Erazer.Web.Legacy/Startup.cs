@@ -52,7 +52,7 @@ namespace Erazer.Web.Legacy
                     options.ResponseType = "code id_token";
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
-                    options.Scope.Add("api1");
+                    options.Scope.Add("api");
                     options.Scope.Add("offline_access");
                 });
             services.AddAuthorization(options =>

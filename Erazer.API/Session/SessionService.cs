@@ -29,6 +29,11 @@ namespace Erazer.API.Session
 
         public async Task<bool> HasValidSession(ClaimsPrincipal principal)
         {
+            // Legacy client doesn't work with the SessionId...
+            var clientId = principal.Claims.SingleOrDefault(c => c.Type == "client_id")?.Value;
+            if (clientId == "legacy")
+                return true;
+            
             var hasSession = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("Erazer.SSO.SessionId", out var sessionId);
 
             if (!hasSession) 

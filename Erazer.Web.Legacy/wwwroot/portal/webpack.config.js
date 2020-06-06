@@ -190,7 +190,7 @@ module.exports = function (env) {
     devServer: {
       publicPath: '/',
       historyApiFallback: true,
-      port: 3000,
+      port: 4000,
       compress: isProd,
       inline: !isProd,
       hot: !isProd,

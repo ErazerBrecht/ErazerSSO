@@ -33,8 +33,8 @@ namespace Erazer.Web.Legacy.Controllers
             var expire = await HttpContext.GetTokenAsync(expiresAtTokenName);
             if (!string.IsNullOrWhiteSpace(expire))
             {
-                var expireDate = DateTime.ParseExact(expire, "o", CultureInfo.InvariantCulture);
-                if (expireDate > DateTime.UtcNow + TimeSpan.FromMinutes(60 / 2))
+                var expireDate = DateTime.ParseExact(expire, "o", CultureInfo.InvariantCulture).ToUniversalTime();
+                if (expireDate > DateTime.UtcNow + TimeSpan.FromSeconds(900))
                 {
                     return new JsonResult(await HttpContext.GetTokenAsync(accessTokenName));
                 }

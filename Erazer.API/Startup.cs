@@ -56,8 +56,12 @@ namespace Erazer.API
             if (_env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(builder => builder.WithOrigins("http://localhost:8888", "http://localhost:4200", "http://localhost:4201")
-                    .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+                app.UseCors(builder => builder
+                    .AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+                    .WithOrigins(
+                        "http://localhost:5001", "http://localhost:4000",
+                        "http://localhost:8888", "http://localhost:4200", "http://localhost:4201"
+                    ));
             }
             else
             {

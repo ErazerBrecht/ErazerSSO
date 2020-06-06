@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
 
 const sourcePath = path.join(__dirname, './src');
 const destPathLocal = path.join(__dirname, './dist/');
