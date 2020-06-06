@@ -58,7 +58,7 @@ namespace Erazer.IdentityProvider.Session
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
+                SameSite = SameSiteMode.Lax,
                 Secure = _env.IsProduction(),
                 Expires = session.End
             };
@@ -74,7 +74,7 @@ namespace Erazer.IdentityProvider.Session
         {
             var hasSession =
                 _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue("Erazer.SSO.SessionId", out var sessionId);
-            return !hasSession ? null : GetSession(sessionId);
+            return !hasSession ? Task.FromResult<Session>(null) : GetSession(sessionId);
         }
 
         public Task<Session> GetSession(string sessionId)

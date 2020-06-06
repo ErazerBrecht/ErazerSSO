@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Erazer.IdentityProvider.Session.Helpers;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Services;
@@ -106,6 +107,7 @@ namespace IdentityServer4.Quickstart.UI
             // this is typically used to store data needed for signout from those protocols.
             var additionalLocalClaims = new List<Claim>();
             var localSignInProps = new AuthenticationProperties();
+            localSignInProps.MarkNewSession();
             ProcessLoginCallbackForOidc(result, additionalLocalClaims, localSignInProps);
             //ProcessLoginCallbackForWsFed(result, additionalLocalClaims, localSignInProps);
             //ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);
@@ -115,7 +117,7 @@ namespace IdentityServer4.Quickstart.UI
             {
                 DisplayName = user.Username,
                 IdentityProvider = provider,
-                AdditionalClaims = additionalLocalClaims
+                AdditionalClaims = user.Claims
             };
 
             await HttpContext.SignInAsync(issuer, localSignInProps);
@@ -169,7 +171,24 @@ namespace IdentityServer4.Quickstart.UI
 
         private TestUser AutoProvisionUser(string provider, string providerUserId, IEnumerable<Claim> claims)
         {
-            var user = _users.AutoProvisionUser(provider, providerUserId, claims.ToList());
+            var technicalClaims = new List<string>
+            {
+                "aud",
+                "iss",
+                "iat",
+                "nbf",
+                "exp",
+                "aio",
+                "amr",
+                "idp",
+                "nonce",
+                "sub",
+                "uti",
+                "ver"
+            };
+
+            var userClaims = claims.Where(c => !technicalClaims.Contains(c.Type));
+            var user = _users.AutoProvisionUser(provider, providerUserId, userClaims.ToList());
             return user;
         }
 

@@ -3,13 +3,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Erazer.IdentityProvider.Session;
-using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
-using IdentityServer4.Services;
 using IdentityServer4.Test;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Erazer.IdentityProvider.Profile
 {
