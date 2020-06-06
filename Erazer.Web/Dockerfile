@@ -1,9 +1,9 @@
-FROM node:13-alpine AS base
+FROM node:14-alpine AS base
 WORKDIR /app
 USER node
 EXPOSE 8888
 
-FROM node:13-alpine AS build
+FROM node:14-alpine AS build
 WORKDIR /src
 COPY . Erazer.Web/
 RUN chown -R node:node Erazer.Web
@@ -12,7 +12,7 @@ WORKDIR /src/Erazer.Web
 RUN npm run install:all
 RUN npm run release
 
-FROM node:13-alpine AS publish
+FROM node:14-alpine AS publish
 WORKDIR /dist
 USER node
 COPY --from=build /src/Erazer.Web/node_modules ./node_modules

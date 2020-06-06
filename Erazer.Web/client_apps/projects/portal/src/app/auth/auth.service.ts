@@ -1,16 +1,18 @@
 import { Injectable, isDevMode } from '@angular/core';
+import { Location } from '@angular/common';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { OAuthService, OAuthErrorEvent } from 'angular-oauth2-oidc';
 import { authConfig } from './auth.config';
 import { environment } from '../../environments/environment';
-import { HttpHeaders, HttpClient } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
 })
 export class InitialAuthService {
-    constructor(private http: HttpClient, private oauthService: OAuthService) { }
+    constructor(private http: HttpClient, private oauthService: OAuthService, private location: Location, private router: Router) { }
 
-    initAuth(): Promise<any> {
+    public initAuth(): Promise<any> {
         if (isDevMode()) {
             return this.initDev();
         }
@@ -60,8 +62,12 @@ export class InitialAuthService {
         });
 
         // continue initializing app (provoking a token_received event) or redirect to login-page
-        const isLoggedIn = await this.oauthService.loadDiscoveryDocumentAndLogin();
+        const isLoggedIn = await this.oauthService.loadDiscoveryDocumentAndLogin({state: this.location.path()});
         if (isLoggedIn) {
+            const state = this.oauthService.state;
+            if (state) {
+                this.router.navigateByUrl(decodeURIComponent(state));
+            }
             this.oauthService.setupAutomaticSilentRefresh();
         } else {
             console.log('User is not logged in...');

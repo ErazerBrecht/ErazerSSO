@@ -4,6 +4,8 @@ const redisStore = require('connect-redis')(session);
 const url = require('url');
 const passport = require('passport');
 const { Issuer, Strategy, custom } = require('openid-client');
+const { random } = require('openid-client/lib/helpers/generators');
+const base64url = require('base64url');
 
 // Initialize passport/auth settings
 module.exports = async (app) => {
@@ -44,11 +46,11 @@ module.exports = async (app) => {
     if (isSecure) {
         app.set('trust proxy', 1) // trust first proxy
     }
-    
+
     app.use(session({
         store: new redisStore({ client: redisClient }),
         secret: '8tJbS2kGdzFCLHtMujnkM94fPA7A9t33MqAcJCMbapmTLPVcDJ86WJr9kBHCFQ3FbV2p',
-        cookie: { sameSite: 'strict', secure: isSecure },
+        cookie: { sameSite: 'lax', secure: isSecure },
         name: 'Erazer.Web',
         resave: false,
         saveUninitialized: false
@@ -83,17 +85,8 @@ module.exports = async (app) => {
         res.redirect('/');
     });
 
-    // Start the 'authorization code flow' against the authorization server
-    app.get('/auth/login', (req, res, next) => {
-        if (req.query.redirect)
-            passport.authenticate('oidc', { state: req.query.redirect })(req, res, next);
-        else
-            passport.authenticate('oidc')(req, res, next);
-
-    });
-
     // Redirect the user to the 'authorized' app if signed in. If it's not the case start the 'authorization code flow' against the authorization server
-    app.get('/auth/dashboard', (req, res) => {
+    app.get('/auth/dashboard', (req, res, next) => {
         if (req.user) {
             if (req.query.redirect)
                 res.redirect(`/portal${req.query.redirect}`);
@@ -101,19 +94,30 @@ module.exports = async (app) => {
                 res.redirect('/portal/');
         }
         else {
-            res.redirect('/auth/login');
+            if (req.query.redirect) {
+                const state = { state_id: random(), redirect: req.query.redirect };
+                const urlState = base64url(JSON.stringify(state));
+                passport.authenticate('oidc', { state: urlState })(req, res, next);
+            } else
+                passport.authenticate('oidc')(req, res, next);
         }
     });
 
     // Callback (the authorization server redirects to this endpoint if the authorization succeeded)
     // Will redirect the user to the dashboard page 
-    // Uses the 'state' property to redirec the user to a 'angular' route.
+    // Uses the 'state' property to redirect the user to a 'angular' route.
     app.get('/auth/signin-oidc', (req, res, next) => {
         let successRedirect = '/auth/dashboard';
 
-        // TODO ASK KIERAN IF SECURE
-        if (req.query.state && !req.query.state.includes('-'))
-            successRedirect += `?redirect=${req.query.state}`;
+        if (req.query.state && typeof (req.query.state) === 'string') {
+            const decoded = base64url.decode(req.query.state);
+            try {
+                const obj = JSON.parse(decoded);
+                if (obj.redirect && obj.redirect.includes('/')) {
+                    successRedirect += `?redirect=${obj.redirect}`;
+                }
+            } catch { }
+        }
 
         passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
     });
