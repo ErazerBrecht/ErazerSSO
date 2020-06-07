@@ -9,7 +9,7 @@ namespace Thirdparty.Web.Extensions
         // TODO: Enable RequireHttpsMetadata on PROD
         public static AuthenticationBuilder AddErazerSSO(this AuthenticationBuilder auth)
         {
-            return auth.AddOpenIdConnect("ErazerSSO", options =>
+            return auth.AddOpenIdConnect("ErazerSSO", "ErazerSSO", options =>
             {
                 options.Authority = "http://localhost:5000";
                 options.ResponseType = "code";
