@@ -179,7 +179,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": false,
-              "vendorChunk": false,
               "fileReplacements": [
                 {
                   "replace": "projects/landing/src/environments/environment.ts",
