@@ -29,7 +29,6 @@
     "angular-oauth2-oidc": "~10.0.2",
     "bootstrap": "~4.4.1",
     "font-awesome": "~4.7.0",
-    "placeholder-loading": "~0.2.6",
     "rxjs": "~6.6.0",
     "typeface-montserrat": "0.0.75",
     "zone.js": "~0.10.3"

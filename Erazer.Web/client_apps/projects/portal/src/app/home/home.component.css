@@ -2,6 +2,15 @@ h1 {
     text-align: center;
 }
 
+table {
+    background-color: white;
+    padding: 30px;
+    border-width: 1px;
+    border-color: #b6b6b6;
+    border-style: solid;
+    border-radius: 5px;
+}
+
 th {
     text-align: left;
 }

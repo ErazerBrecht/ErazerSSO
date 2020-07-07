@@ -37,7 +37,6 @@
               "projects/portal/src/silent-refresh.html"
             ],
             "styles": [
-              "node_modules/placeholder-loading/src/scss/placeholder-loading.scss",
               "projects/portal/src/styles.css"
             ],
             "scripts": []

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Erazer.Web", "Erazer.Web", "{0FF2FD73-641D-46BE-8B03-39D6FDF7F3D5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erazer.API", "Erazer.API\Erazer.API.csproj", "{0FF65609-2803-4A53-868F-05EC93352CB7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Erazer.Web.Legacy", "Erazer.Web.Legacy\Erazer.Web.Legacy.csproj", "{3DBFE7B8-8764-42DD-B04A-AA68573E8A5C}"
