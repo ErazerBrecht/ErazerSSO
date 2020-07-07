@@ -40,9 +40,8 @@ function angularRouter(req, res) {
         // This causes css to be loaded as first while we wont to defer the loading
         // const cssRegex = globToRegExp('href="*.css', { flags: 'g' });
         // const cssLinks = htmlWithCss.match(cssRegex).map(x => `</${x.replace('href="', '')}>; rel=preload; as=style;`);
-        // JS doesn't work because type="module" needs "crossorigin" -> Doesn't work with cloudflare
-        //const jsRegex = /src=.[^,]*?\.js/g
-        //const jsLinks = htmlWithCss.match(jsRegex).filter(x => x.includes('es2015')).map(x => `</${x.replace('src="', '')}>; rel=preload; as=script; crossorigin;`);
+        const jsRegex = /src=.[^,]*?\.js/g
+        const jsLinks = htmlWithCss.match(jsRegex).map(x => `</${x.replace('src="', '')}>; rel=preload; as=script;`);
         const imgRegex = new RegExp('<img[^>]+src="([^">]+)"', 'g');
         const imgLinks = [...htmlWithCss.matchAll(imgRegex)].map(x => x[1]).map(x => `<${x}>; rel=preload; as=image;`);
         const bgImgRegex = /url\('.*\.webp'/g;
@@ -51,7 +50,7 @@ function angularRouter(req, res) {
         //const fontRegex =  /url\(.[^,]*?\.woff2/g;
         //const fontLinks = htmlWithCss.match(fontRegex).map(x => x.replace("url(", "/")).map(x => `<${x}>; rel=preload; as=font; crossorigin;`);
         //const links = [...cssLinks, ...jsLinks, ...imgLinks, ...bgImgLinks, ...fontLinks];
-        const links = [...imgLinks, ...bgImgLinks];
+        const links = [...jsLinks, ...imgLinks, ...bgImgLinks];
         res.setHeader('Link', links);
 
         res.send(htmlWithCss);
