@@ -7,13 +7,14 @@ import { isPlatformBrowser } from '@angular/common';
     styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-    private toggleButton: Element;
     private sidebarVisible: boolean;
     private isBrowser: boolean;
+    private toggleButton?: Element;
 
     constructor(@Inject(PLATFORM_ID) private platformId: Object, private renderer: Renderer2, private element: ElementRef) {
         this.sidebarVisible = false;
         this.isBrowser = isPlatformBrowser(this.platformId);
+        this.toggleButton = undefined;
     }
 
     ngOnInit() {
@@ -37,20 +38,19 @@ export class NavbarComponent implements OnInit {
     }
 
     sidebarOpen() {
-        const toggleButton = this.toggleButton;
         const html = document.getElementsByTagName('html')[0];
 
-        setTimeout(function () {
-            toggleButton.classList.add('toggled');
+        setTimeout(() => {
+            this.toggleButton?.classList.add('toggled');
         }, 500);
+        
         html.classList.add('nav-open');
-
         this.sidebarVisible = true;
     }
 
     sidebarClose() {
         const html = document.getElementsByTagName('html')[0];
-        this.toggleButton.classList.remove('toggled');
+        this.toggleButton?.classList.remove('toggled');
         this.sidebarVisible = false;
         html.classList.remove('nav-open');
     }

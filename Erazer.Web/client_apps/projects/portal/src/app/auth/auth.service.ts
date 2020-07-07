@@ -22,11 +22,15 @@ export class InitialAuthService {
     private async initDev() {
         const tokenRequest = new URLSearchParams();
 
+        if (!environment.username || !environment.password || !environment.client_id || !environment.client_secret) {
+            throw new Error("Can't complete dev authentication flow, missing environment variables");
+        }
+
         tokenRequest.set('grant_type', "password");
-        tokenRequest.set('username', this.getEnv('username'));
-        tokenRequest.set('password', this.getEnv('password'));
-        tokenRequest.set('client_id', this.getEnv('client_id'));
-        tokenRequest.set('client_secret', this.getEnv('client_secret'));
+        tokenRequest.set('username', environment.username);
+        tokenRequest.set('password', environment.password);
+        tokenRequest.set('client_id', environment.client_id);
+        tokenRequest.set('client_secret', environment.client_secret);
 
         const httpOptions = {
             headers: new HttpHeaders({
@@ -36,7 +40,7 @@ export class InitialAuthService {
 
         try {
             const data = await this.http
-                .post<any>(`${this.getEnv('idsrv')}/connect/token`, tokenRequest.toString(), httpOptions)
+                .post<any>(`${environment.idsrv}/connect/token`, tokenRequest.toString(), httpOptions)
                 .toPromise();
 
             sessionStorage.setItem('access_token', data.access_token);
@@ -73,11 +77,5 @@ export class InitialAuthService {
             console.log('User is not logged in...');
             throw new Error('Not logged in user -> Redirect to login page');
         }
-    }
-
-    private getEnv(name: string) {
-        if (environment.hasOwnProperty(name))
-            return environment[name];
-        throw Error('Environment variable is not defined!');
     }
 }

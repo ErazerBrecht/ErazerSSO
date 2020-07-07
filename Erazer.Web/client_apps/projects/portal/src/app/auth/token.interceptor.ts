@@ -1,6 +1,6 @@
 import { Injectable, isDevMode } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { HttpRequest, HttpHandler, HttpInterceptor, HttpErrorResponse, HttpEvent } from '@angular/common/http';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { OAuthService } from 'angular-oauth2-oidc';
 
@@ -27,7 +27,7 @@ export class TokenInterceptor implements HttpInterceptor {
         }
     }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
+    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(this.addToken(req)).pipe(
             catchError((error) => {
                 if (error instanceof HttpErrorResponse) {
@@ -36,6 +36,7 @@ export class TokenInterceptor implements HttpInterceptor {
                             return this.handle401Error();
                     }
                 }
+                return of(error);
             }));
     }
 }

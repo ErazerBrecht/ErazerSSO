@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ResultModel } from '../models/result';
+import { IResultDto } from '../models/result';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -12,7 +12,7 @@ export class HomeService {
     this.baseUrl = environment.api;
    }
 
-  public getResults(): Observable<Array<ResultModel>> {
-    return this.http.get<Array<ResultModel>>(`${this.baseUrl}/results`);
+  public getResults(): Observable<Array<IResultDto>> {
+    return this.http.get<Array<IResultDto>>(`${this.baseUrl}/results`);
   }
 }

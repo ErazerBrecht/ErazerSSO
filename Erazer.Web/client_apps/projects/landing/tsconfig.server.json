@@ -2,7 +2,8 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "outDir": "../out-tsc/server",
-    "target": "es2016"
+    "target": "es2016",
+    "strict": false,
 },
   "angularCompilerOptions": {
     "entryModule": "src/app/app-server.module#AppServerModule"

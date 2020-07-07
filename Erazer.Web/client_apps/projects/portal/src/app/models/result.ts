@@ -1,4 +1,5 @@
-export class ResultModel {
+
+export interface IResultDto {
     id: string;
     subject: string;
     score: string;
