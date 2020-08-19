@@ -1,12 +1,8 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Erazer.IdentityProvider.Session;
-using Erazer.IdentityProvider.Session.Helpers;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Extensions;
@@ -41,7 +37,6 @@ namespace IdentityServer4.Quickstart.UI
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            ISessionService session,
             TestUserStore users = null)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
@@ -126,10 +121,6 @@ namespace IdentityServer4.Quickstart.UI
                             ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
                         };
                     }
-                    
-                    // the user has provided the correct credentials 
-                    // start a new session
-                    props.MarkNewSession();
 
                     // issue authentication cookie with subject ID and username
                     var issuer = new IdentityServerUser(user.SubjectId)

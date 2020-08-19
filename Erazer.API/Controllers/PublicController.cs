@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Erazer.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api/public")]
+    [Route("[controller]")]
     public class PublicController : Controller
     {
         private static readonly IReadOnlyCollection<string> Quotes = new ReadOnlyCollection<string>(

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HomeService } from './home.service';
 import { Observable } from 'rxjs';
 import { IResultDto } from '../models/result';
-import { startWith } from 'rxjs/operators';
+import { startWith, debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +14,6 @@ export class HomeComponent {
 
   constructor(private service: HomeService) {
     // TODO Create custom pipe to 'random generate some null starting values'
-    this.results = this.service.getResults().pipe(startWith([null, null]));
+    this.results = this.service.getResults().pipe(startWith([null, null]), debounceTime(50));
   }
 }

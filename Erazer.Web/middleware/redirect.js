@@ -14,12 +14,14 @@ module.exports = (req, res, next) => {
     if (req.url.startsWith('/portal')) {
         if (!req.user)
             return res.redirect('/');
-        if (!req.url.includes('.'))
+        if (!req.url.includes('.')) {
+            res.cookie('XSRF-TOKEN', req.csrfToken(), {sameSite: 'strict'});
             return res.sendFile('portal/index.html', { root: wwwroot });
+        }
     }
 
-    // Execute 'normal' express code if url is auth endpoint or a static file
-    if (req.url.startsWith('/auth') || req.url.includes('.'))
+    // Execute 'normal' express code if url is auth/api endpoint or a static file
+    if (req.url.startsWith('/auth') || req.url.startsWith('/api') || req.url.includes('.'))
         return next();
 
     return angularRouter(req, res);
@@ -46,7 +48,7 @@ function angularRouter(req, res) {
         const imgLinks = [...htmlWithCss.matchAll(imgRegex)].map(x => x[1]).map(x => `<${x}>; rel=preload; as=image;`);
         const bgImgRegex = /url\('.*\.webp'/g;
         const bgImgLinks = htmlWithCss.match(bgImgRegex).map(x => x.replace(/'/g, "").replace("url(", "")).map(x => `<${x}>; rel=preload; as=image;`);
-         // Fonts don't work because it needs "crossorigin" -> Doesn't work with cloudflare
+        // Fonts don't work because it needs "crossorigin" -> Doesn't work with cloudflare
         //const fontRegex =  /url\(.[^,]*?\.woff2/g;
         //const fontLinks = htmlWithCss.match(fontRegex).map(x => x.replace("url(", "/")).map(x => `<${x}>; rel=preload; as=font; crossorigin;`);
         //const links = [...cssLinks, ...jsLinks, ...imgLinks, ...bgImgLinks, ...fontLinks];

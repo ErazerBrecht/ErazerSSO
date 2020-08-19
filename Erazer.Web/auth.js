@@ -6,6 +6,7 @@ const passport = require('passport');
 const { Issuer, Strategy, custom } = require('openid-client');
 const { random } = require('openid-client/lib/helpers/generators');
 const base64url = require('base64url');
+const crypto = require('@trust/webcrypto');
 
 // Initialize passport/auth settings
 module.exports = async (app) => {
@@ -38,8 +39,8 @@ module.exports = async (app) => {
     });
 
     // Use oidc strategy, when user is authenticated retrieve information from user (id, username, role) and store it in the session!
-    passport.use('oidc', new Strategy({ client, params: { redirect_uri: `${host}/auth/signin-oidc`, scope: 'openid profile role' } }, (tokenset, userinfo, done) => {
-        const user = { id: userinfo.sub, name: userinfo.name, role: userinfo.role, id_token: tokenset.id_token };
+    passport.use('oidc', new Strategy({ client, params: { redirect_uri: `${host}/auth/signin-oidc`, scope: 'openid profile role api' }, passReqToCallback: true }, (req, tokenset, userinfo, done) => {
+        const user = { id: userinfo.sub, name: userinfo.name, role: userinfo.role, access_token: tokenset.access_token, id_token: tokenset.id_token, ip: req.ip, userAgent: req.get('User-Agent') };
         return done(null, user);
     }));
 
@@ -79,46 +80,89 @@ module.exports = async (app) => {
         }
     });
 
-    // Destroys the user session
-    app.get('/auth/logout/local', (req, res) => {
-        req.logout();
-        res.redirect('/');
-    });
-
     // Redirect the user to the 'authorized' app if signed in. If it's not the case start the 'authorization code flow' against the authorization server
-    app.get('/auth/dashboard', (req, res, next) => {
-        if (req.user) {
-            if (req.query.redirect)
-                res.redirect(`/portal${req.query.redirect}`);
-            else
-                res.redirect('/portal/');
-        }
-        else {
-            if (req.query.redirect) {
-                const state = { state_id: random(), redirect: req.query.redirect };
+    app.get('/auth/login', (req, res, next) => {
+        const fn = function (_req, _res, _next) {
+            if (_req.query.redirect) {
+                const state = { state_id: random(), redirect: _req.query.redirect };
                 const urlState = base64url(JSON.stringify(state));
-                passport.authenticate('oidc', { state: urlState })(req, res, next);
+                passport.authpasenticate('oidc', { state: urlState })(_req, _res, _next);
             } else
-                passport.authenticate('oidc')(req, res, next);
-        }
+                passport.authenticate('oidc')(_req, _res, _next);
+        };
+
+        if (req.user) {
+            // Kill previous session
+            req.session.regenerate(err => {
+                if (err)
+                    next(err);
+                fn(req, res, next)
+            });
+        } else
+            fn(req, res, next);
     });
 
     // Callback (the authorization server redirects to this endpoint if the authorization succeeded)
-    // Will redirect the user to the dashboard page 
+    // Will redirect the user to portal application
     // Uses the 'state' property to redirect the user to a 'angular' route.
     app.get('/auth/signin-oidc', (req, res, next) => {
-        let successRedirect = '/auth/dashboard';
+        let successRedirect = '/portal';
 
         if (req.query.state && typeof (req.query.state) === 'string') {
             const decoded = base64url.decode(req.query.state);
             try {
                 const obj = JSON.parse(decoded);
                 if (obj.redirect && obj.redirect.includes('/')) {
-                    successRedirect += `?redirect=${obj.redirect}`;
+                    successRedirect += `${obj.redirect}`;
                 }
             } catch { }
         }
 
-        passport.authenticate('oidc', { successRedirect, failureRedirect: '/auth/logout/local' })(req, res);
+        passport.authenticate('oidc', { successRedirect, failureRedirect: '/' })(req, res);
+    });
+
+    app.post('/auth/key', async (req, res) => {
+        if (!req.user) {
+            return res.status(401).json({ error: 'Not signed in' });
+        }
+
+        if (req.user.ip !== req.ip || req.user.userAgent !== req.get('User-Agent')) {
+            return res.status(401).json({ error: 'Incorrect session parameters' });
+        }
+
+        if (req.user.publicKey) {
+            return res.status(403).json({ error: 'Already provided a public key in this session' });
+        }
+
+        const publicKey = (req.body || {}).publicKey;
+
+        if (!publicKey) {
+            return res.status(400).json({ error: 'Missing public key' });
+        }
+
+        try {
+            await crypto.subtle.importKey(
+                "jwk",
+                publicKey,
+                {
+                    name: "RSA-PSS",
+                    modulusLength: 4096,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: "SHA-256"
+                },
+                false, 
+                ["verify"]);
+
+            req.user.publicKey = publicKey;
+            res.sendStatus(204);
+        }
+        catch (e) {
+            return res.status(400).json({ error: 'Incorrect public key format' });
+        }
+
+
+
+
+
     });
 }

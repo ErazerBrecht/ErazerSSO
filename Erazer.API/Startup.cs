@@ -4,12 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using Erazer.API.Session;
-using Erazer.API.Session.AuthenticationHandlers;
-using Erazer.API.Session.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
@@ -32,13 +26,11 @@ namespace Erazer.API
             services.AddControllers();
             services.AddCloudflareForwardHeaderOptions();
 
-            services.AddScoped<ISessionService, SessionService>();
-            services.AddMongoDbSessionStore(_configuration["mongodb_connectionString"]);
             services.AddHttpContextAccessor();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services.AddAuthentication("Bearer")
-                .AddJwtSessionBearer("Bearer", options =>
+                .AddJwtBearer("Bearer", options =>
                 {
                     options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5);
                     options.Authority = $"{_configuration["idsrv_hostname"]}";

@@ -1,18 +1,34 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpErrorResponse, HttpEvent } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, from } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { InitialAuthService } from './auth.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-    constructor(private oauthService: OAuthService) { }
+    constructor(private authService: InitialAuthService) { }
 
-    addToken(req: HttpRequest<any>): HttpRequest<any> {
-        req = req.clone({ withCredentials: true });
-        const token = sessionStorage.getItem('access_token');
-        return token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+    async addSign(req: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
+        const privateKey = this.authService.getKey()?.privateKey;
+
+        if (!privateKey) 
+            return next.handle(req).toPromise();
+
+        const epoch = Date.now().toString();
+        const encoded = new TextEncoder().encode(epoch);
+        const signature = await window.crypto.subtle.sign(
+            {
+                name: "RSA-PSS",
+                saltLength: 32,
+            },
+            privateKey,
+            encoded
+        );
+
+        const signBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+        const newReq = req.clone({ setHeaders: { "X-Epoch": epoch, "X-Signature": signBase64 } });
+        return next.handle(newReq).toPromise();
     }
 
     handle401Error() {
@@ -22,13 +38,13 @@ export class TokenInterceptor implements HttpInterceptor {
             return throwError('Expiration!!');
         }
         else {
-            this.oauthService.initLoginFlow();
+            alert('TODO')
             return throwError('Redirecting!!');
         }
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return next.handle(this.addToken(req)).pipe(
+        return from(this.addSign(req, next)).pipe(
             catchError((error) => {
                 if (error instanceof HttpErrorResponse) {
                     switch ((<HttpErrorResponse>error).status) {

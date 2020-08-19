@@ -71,8 +71,8 @@ namespace Erazer.IdentityProvider
                     ClientId = "nodejs",
                     ClientName = "ErazerSSO NodeJS",
 
-                    AccessTokenLifetime = 60,
-                    IdentityTokenLifetime = 60,
+                    AccessTokenLifetime = 40000,
+                    IdentityTokenLifetime = 40000,
                     AllowAccessTokensViaBrowser = false,
                     AllowOfflineAccess = false,
 
@@ -84,41 +84,7 @@ namespace Erazer.IdentityProvider
                     PostLogoutRedirectUris = {nodejsHostname},
 
                     AlwaysIncludeUserClaimsInIdToken = true,
-                    AllowedScopes = {"openid", "profile", "role"}
-                },
-                new Client
-                {
-                    ClientId = "angular",
-                    ClientName = "ErazerSSO Angular",
-
-                    AccessTokenLifetime = 90,
-                    AllowOfflineAccess = false,
-
-                    RequireClientSecret = false,
-                    AllowedGrantTypes = GrantTypes.Code,
-                    RequirePkce = true,
-                    RequireConsent = false,
-                    RedirectUris = new[]
-                    {
-                        $"{nodejsHostname}/portal/index.html",
-                        $"{nodejsHostname}/portal/silent-refresh.html"
-                    },
-
-                    AllowedScopes = {"openid", "profile", "api"}
-                },
-                new Client
-                {
-                    ClientId = "angular_dev",
-                    ClientName = "ErazerSSO Angular_DEV",
-
-                    AccessTokenLifetime = (int) TimeSpan.FromDays(14).TotalSeconds,
-                    AllowOfflineAccess = false,
-
-                    RequireConsent = false,
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    ClientSecrets = {new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256())},
-
-                    AllowedScopes = {"openid", "profile", "api"}
+                    AllowedScopes = {"openid", "profile", "role", "api"}
                 },
                 new Client
                 {

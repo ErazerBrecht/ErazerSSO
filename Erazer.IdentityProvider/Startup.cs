@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
-using Erazer.IdentityProvider.Profile;
-using Erazer.IdentityProvider.Session;
-using Erazer.IdentityProvider.Session.Helpers;
 using IdentityServer4;
 using IdentityServer4.Quickstart.UI;
 using IdentityServer4.Services;
@@ -54,10 +51,6 @@ namespace Erazer.IdentityProvider
             builder.AddTestUsers(TestUsers.Users);
             builder.AddInMemoryPersistedGrants();
 
-            services.AddScoped<IProfileService, ProfileService>();
-            services.AddScoped<ISessionService, SessionService>();
-            services.AddMongoDbSessionStore(Configuration["mongodb_connectionString"]);
-
             var azureAdOptions = new AzureAdOptions();
             Configuration.Bind("AzureAd", azureAdOptions);
             
@@ -76,9 +69,9 @@ namespace Erazer.IdentityProvider
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
             
-            services.AddAuthentication("Erazer.SSO.CookiePlusSession.Authentication")
-                .AddScheme<CookieAuthenticationOptions, CookieSessionAuthenticationHandler>(
-                    "Erazer.SSO.CookiePlusSession.Authentication", x =>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(
+                    CookieAuthenticationDefaults.AuthenticationScheme, x =>
                     {
                         x.Cookie.Name = "Erazer.SSO.WebSession";
                         x.Cookie.SecurePolicy = Environment.IsProduction()

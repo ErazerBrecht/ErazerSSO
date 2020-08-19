@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Erazer.IdentityProvider.Session.Helpers;
 using IdentityModel;
 using IdentityServer4.Events;
 using IdentityServer4.Services;
@@ -107,7 +106,6 @@ namespace IdentityServer4.Quickstart.UI
             // this is typically used to store data needed for signout from those protocols.
             var additionalLocalClaims = new List<Claim>();
             var localSignInProps = new AuthenticationProperties();
-            localSignInProps.MarkNewSession();
             ProcessLoginCallbackForOidc(result, additionalLocalClaims, localSignInProps);
             //ProcessLoginCallbackForWsFed(result, additionalLocalClaims, localSignInProps);
             //ProcessLoginCallbackForSaml2p(result, additionalLocalClaims, localSignInProps);

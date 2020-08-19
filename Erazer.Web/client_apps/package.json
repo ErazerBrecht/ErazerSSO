@@ -26,7 +26,6 @@
     "@ng-bootstrap/ng-bootstrap": "~6.1.0",
     "@nguniversal/common": "~10.0.1",
     "@nguniversal/express-engine": "~10.0.1",
-    "angular-oauth2-oidc": "~10.0.2",
     "bootstrap": "~4.4.1",
     "font-awesome": "~4.7.0",
     "rxjs": "~6.6.0",
