@@ -27,7 +27,7 @@ namespace Erazer.IdentityProvider
         {
             return new ApiResource[]
             {
-                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role, "session"})
+                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role})
             };
         }
 
