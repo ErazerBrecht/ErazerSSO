@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="IdentityServer4" Version="3.1.2" />
     <PackageReference Include="IPAddressRange" Version="4.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
   </ItemGroup>
 </Project>

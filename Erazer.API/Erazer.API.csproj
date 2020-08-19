@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="IPAddressRange" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
-    <PackageReference Include="MongoDB.Driver" Version="2.10.2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
   </ItemGroup>
 </Project>

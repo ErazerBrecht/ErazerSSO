@@ -86,7 +86,7 @@ module.exports = async (app) => {
             if (_req.query.redirect) {
                 const state = { state_id: random(), redirect: _req.query.redirect };
                 const urlState = base64url(JSON.stringify(state));
-                passport.authpasenticate('oidc', { state: urlState })(_req, _res, _next);
+                passport.authenticate('oidc', { state: urlState })(_req, _res, _next);
             } else
                 passport.authenticate('oidc')(_req, _res, _next);
         };
