@@ -33,8 +33,7 @@
                 "glob": "**/*",
                 "input": "projects/portal/src/assets",
                 "output": "/assets"
-              },
-              "projects/portal/src/silent-refresh.html"
+              }
             ],
             "styles": [
               "projects/portal/src/styles.css"
