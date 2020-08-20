@@ -45,7 +45,7 @@ module.exports = async (app) => {
     }));
 
     if (isSecure) {
-        app.set('trust proxy', 1) // trust first proxy
+        app.set('trust proxy', true)
     }
 
     app.use(session({

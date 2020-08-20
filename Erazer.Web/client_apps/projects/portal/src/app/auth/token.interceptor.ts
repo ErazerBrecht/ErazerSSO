@@ -33,13 +33,15 @@ export class TokenInterceptor implements HttpInterceptor {
 
     handle401Error() {
         if (isDevMode()) {
+            // TODO...
             alert('Session expired/invalid! Press OK to restart a refresh');
             location.reload();
             return throwError('Expiration!!');
         }
         else {
-            alert('TODO')
-            return throwError('Redirecting!!');
+            console.error('Session is unauthenticated. Refresh session...');
+            window.location.href = "/auth/login";
+            return throwError('Redirecting...');
         }
     }
 

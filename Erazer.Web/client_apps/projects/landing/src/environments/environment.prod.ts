@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  host: 'http://localhost:5002'
-  //host: 'https://api.erazerbrecht.me'
+  host: 'https://erazerbrecht.me'
+  //host: 'http://localhost:8888'
 };

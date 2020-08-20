@@ -9,7 +9,6 @@ import { IEnvironment } from "./ienvironment";
 // They shouldn't be commited into vcs!!
 export const environment: IEnvironment = {
   production: false, 
-  api: 'http://localhost:5002/api',
   idsrv: 'http://localhost:5000',
   username: 'alice',                
   password: 'alice',                

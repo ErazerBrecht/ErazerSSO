@@ -34,7 +34,7 @@ module.exports = new Promise(async (resolve, reject) => {
 
     app.use(redirectMiddleware);
     app.use(staticfiles(app.get('config').wwwroot));
-    app.use('/api', await apiProxy('localhost:5002/'));
+    app.use('/api', await apiProxy(app.get('config').api));
     
 
     resolve(app);

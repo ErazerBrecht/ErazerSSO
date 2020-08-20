@@ -24,7 +24,7 @@ module.exports = (apiUrl) => {
             // Epoch check
             const epochNumber = +epoch;
             const now = Date.now();
-            if (epochNumber < now - 15000 || epochNumber > now + 15000) {
+            if (epochNumber < now - 10000 || epochNumber > now + 10000) {
                 return res.status(401).json({ error: 'Signing check failed' });
             }
 
@@ -56,6 +56,7 @@ module.exports = (apiUrl) => {
                     decodedSignature,
                     encoded
                 );
+
                 if (!result) {
                     return res.status(401).json({ error: 'Signing check failed' });
                 }
