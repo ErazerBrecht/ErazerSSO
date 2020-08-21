@@ -7,6 +7,7 @@ const { Issuer, Strategy, custom } = require('openid-client');
 const { random } = require('openid-client/lib/helpers/generators');
 const base64url = require('base64url');
 const crypto = require('@trust/webcrypto');
+const csrf = require('csurf');
 
 // Initialize passport/auth settings
 module.exports = async (app) => {
@@ -121,7 +122,7 @@ module.exports = async (app) => {
         passport.authenticate('oidc', { successRedirect, failureRedirect: '/' })(req, res);
     });
 
-    app.post('/auth/key', async (req, res) => {
+    app.post('/auth/key', csrf(), async (req, res) => {
         if (!req.user) {
             return res.status(401).json({ error: 'Not signed in' });
         }

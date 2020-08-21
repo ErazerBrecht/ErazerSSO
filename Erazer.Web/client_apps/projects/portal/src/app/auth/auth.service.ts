@@ -1,5 +1,5 @@
 import { Injectable, isDevMode } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
     providedIn: 'root'
@@ -8,7 +8,7 @@ export class InitialAuthService {
 
     private _key: CryptoKeyPair | undefined;
 
-    constructor() { }
+    constructor(private cookieService: CookieService) { }
 
     public initAuth(): Promise<any> {
         if (isDevMode()) {
@@ -44,7 +44,8 @@ export class InitialAuthService {
             var result = await fetch('/auth/key', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-XSRF-Token': this.cookieService.get('XSRF-TOKEN')
                 },
                 body: JSON.stringify({ publicKey: jwk })
             });

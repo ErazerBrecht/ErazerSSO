@@ -1,5 +1,6 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
 import { TokenInterceptor } from './token.interceptor';
 import { InitialAuthService } from './auth.service';
 
@@ -8,6 +9,7 @@ import { InitialAuthService } from './auth.service';
     HttpClientModule,
   ],
   providers: [
+    CookieService,
     InitialAuthService,
     {
       provide: APP_INITIALIZER,
