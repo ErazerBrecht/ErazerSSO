@@ -69,13 +69,15 @@ module.exports = async (app) => {
             const idToken = req.user.id_token;
 
             req.logout();
-            res.redirect(url.format(Object.assign(url.parse(logoutUrl), {
-                search: null,
-                query: {
-                    id_token_hint: idToken,
-                    post_logout_redirect_uri: host
-                },
-            })));
+            req.session.destroy(() => {
+                res.redirect(url.format(Object.assign(url.parse(logoutUrl), {
+                    search: null,
+                    query: {
+                        id_token_hint: idToken,
+                        post_logout_redirect_uri: host
+                    },
+                })));
+            });
         } else {
             res.redirect(logoutUrl);
         }
@@ -151,7 +153,7 @@ module.exports = async (app) => {
                     publicExponent: new Uint8Array([1, 0, 1]),
                     hash: "SHA-256"
                 },
-                false, 
+                false,
                 ["verify"]);
 
             req.user.publicKey = publicKey;
