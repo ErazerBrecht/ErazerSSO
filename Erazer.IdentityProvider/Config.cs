@@ -88,7 +88,7 @@ namespace Erazer.IdentityProvider
                 },
                 new Client
                 {
-                    ClientId = "nodejs_dev
+                    ClientId = "nodejs_dev",
                     ClientName = "ErazerSSO NodeJS DEV",
 
                     AccessTokenLifetime = (int) TimeSpan.FromDays(15).TotalSeconds,
