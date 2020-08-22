@@ -33,8 +33,8 @@ namespace Erazer.API
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5);
-                    options.Authority = $"{_configuration["idsrv_hostname"]}";
-                    options.RequireHttpsMetadata = !_env.IsDevelopment();
+                    options.Authority = _configuration["idsrv_hostname"];
+                    options.RequireHttpsMetadata = _configuration["idsrv_hostname"].StartsWith("https");
                     options.Audience = "api";
                 });
         }

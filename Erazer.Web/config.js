@@ -8,7 +8,8 @@ module.exports = function (app) {
     const idsrv = nconf.get('idsrv');
     const api = nconf.get('api');
     const redis = nconf.get('redis');
-    const config = { host, idsrv, api, redis, wwwroot };
+    const localLoginEnabled = nconf.get('localLoginEnabled') === true;
+    const config = { host, idsrv, api, redis, wwwroot, localLoginEnabled };
     console.log(`Config: ${JSON.stringify(config)}`);
 
     app.set('config', config);

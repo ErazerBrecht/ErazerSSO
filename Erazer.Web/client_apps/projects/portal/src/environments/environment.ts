@@ -9,11 +9,9 @@ import { IEnvironment } from "./ienvironment";
 // They shouldn't be commited into vcs!!
 export const environment: IEnvironment = {
   production: false, 
-  idsrv: 'http://localhost:5000',
+  bff: 'http://localhost:8888',
   username: 'alice',                
   password: 'alice',                
-  client_id: 'angular_dev',
-  client_secret: '425A4639-4079-49E1-9F86-E832F246F5FB'
 };
 
 /*

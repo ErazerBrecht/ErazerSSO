@@ -40,7 +40,7 @@ namespace Erazer.IdentityProvider
             Log.Logger.Information($"Legacy hostname: {legacyHostname}");
             Log.Logger.Information($"NodeJS hostname: {nodejsHostname}");
             Log.Logger.Information($"Thirdparty hostname: {thirdpartyHostname}");
-            
+
             return new[]
             {
                 // Legacy client (MVC + AngularJS 1.X) using hybrid flow
@@ -84,6 +84,20 @@ namespace Erazer.IdentityProvider
                     PostLogoutRedirectUris = {nodejsHostname},
 
                     AlwaysIncludeUserClaimsInIdToken = true,
+                    AllowedScopes = {"openid", "profile", "role", "api"}
+                },
+                new Client
+                {
+                    ClientId = "nodejs_dev
+                    ClientName = "ErazerSSO NodeJS DEV",
+
+                    AccessTokenLifetime = (int) TimeSpan.FromDays(15).TotalSeconds,
+                    AllowOfflineAccess = false,
+
+                    RequireConsent = false,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    ClientSecrets = {new Secret("425A4639-4079-49E1-9F86-E832F246F5FB".Sha256())},
+
                     AllowedScopes = {"openid", "profile", "role", "api"}
                 },
                 new Client

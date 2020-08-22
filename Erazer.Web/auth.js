@@ -8,12 +8,14 @@ const { random } = require('openid-client/lib/helpers/generators');
 const base64url = require('base64url');
 const crypto = require('@trust/webcrypto');
 const csrf = require('csurf');
+const fetch = require('node-fetch');
 
 // Initialize passport/auth settings
 module.exports = async (app) => {
     const config = app.get('config');
     const host = config.host;
     const isSecure = !host.startsWith('http://');
+    const localLoginEnabled = config.localLoginEnabled;
     const redisClient = new Redis(config.redis);
 
     // Get oidc information from authorization server (like the token endpoint, ...)
@@ -52,10 +54,11 @@ module.exports = async (app) => {
     app.use(session({
         store: new redisStore({ client: redisClient }),
         secret: '8tJbS2kGdzFCLHtMujnkM94fPA7A9t33MqAcJCMbapmTLPVcDJ86WJr9kBHCFQ3FbV2p',
-        cookie: { sameSite: 'lax', secure: isSecure },
+        cookie: { sameSite: 'Lax', secure: isSecure },
         name: 'Erazer.Web',
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+
     }));
 
     app.use(passport.initialize());
@@ -94,7 +97,7 @@ module.exports = async (app) => {
                 passport.authenticate('oidc')(_req, _res, _next);
         };
 
-        if (req.user) {
+        if (req.headers?.cookie?.includes('Erazer.Web')) {
             // Kill previous session
             req.session.regenerate(err => {
                 if (err)
@@ -105,10 +108,67 @@ module.exports = async (app) => {
             fn(req, res, next);
     });
 
+    
+    if (localLoginEnabled) {
+        app.use('*', (req, res, next) => {
+            // TODO Convert localLoginEnabled in string array of allowed local host
+            res.header("Access-Control-Allow-Origin", "http://localhost:4201");
+            res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept");
+            res.header("Access-Control-Allow-Credentials", "true");
+
+            if (req.session.user)
+                req.user = req.session.user;
+
+            next();
+        })
+
+        app.post('/auth/login/local', async (req, res) => {
+            const tokenRequest = new URLSearchParams();
+            const username = req.body.username;
+            const password = req.body.password;
+
+            if (!username || !password) {
+                res.status(400).json({ error: 'Missing credentials' });
+            }
+
+            tokenRequest.set('grant_type', "password");
+            tokenRequest.set('username', username);
+            tokenRequest.set('password', password);
+            tokenRequest.set('client_id', 'nodejs_dev');
+            tokenRequest.set('client_secret', '425A4639-4079-49E1-9F86-E832F246F5FB');
+
+            try {
+                var response = await fetch(issuer.token_endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: tokenRequest
+                });
+
+                if (!response.ok) {
+                    throw new Error();
+                }
+
+                const json = await response.json();
+                const access_token = json.access_token;
+
+                const userInfo = await client.userinfo(access_token);
+
+                req.session.user = Object.assign(userInfo , { isLocal: true, access_token });
+                req.session.cookie.maxAge = 14 * 24 * 3600 * 1000;
+                res.sendStatus(200);
+            } catch (err) {
+                res.status(500).json({ error: "Couldn't retrieve an access_token for local development" });
+            }
+        });
+    }
+
+
     // Callback (the authorization server redirects to this endpoint if the authorization succeeded)
     // Will redirect the user to portal application
     // Uses the 'state' property to redirect the user to a 'angular' route.
-    app.get('/auth/signin-oidc', (req, res, next) => {
+    app.get('/auth/signin-oidc', (req, res) => {
         let successRedirect = '/portal';
 
         if (req.query.state && typeof (req.query.state) === 'string') {
@@ -162,10 +222,5 @@ module.exports = async (app) => {
         catch (e) {
             return res.status(400).json({ error: 'Incorrect public key format' });
         }
-
-
-
-
-
     });
 }

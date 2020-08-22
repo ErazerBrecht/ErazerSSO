@@ -14,6 +14,3 @@ appPromise.then(app => {
 	console.error(error);
 	process.exit();
 });
-
-
-

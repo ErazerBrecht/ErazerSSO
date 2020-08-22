@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 services:
   erazer.sso.identityserver:
@@ -7,35 +7,48 @@ services:
       context: ../Erazer.IdentityProvider
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
+      - "5000:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_PRINT_TELEMETRY_MESSAGE=false
+      - legacy_hostname=http://localhost:5001
+      - nodejs_hostname=http://localhost:8888
+      - thirdparty_hostname=http://localhost:9999
+      - AzureAd__ClientId=XXXXXXXXXXX
+      - AzureAd__Domain=erazerbrecht.onmicrosoft.com
+      - AzureAd__Instance=https://login.microsoftonline.com/
+      - AzureAd__TenantId=XXXXXXXXXXX
   erazer.sso.api:
     image: erazerbrecht/erazersso-api
     build:
       context: ../Erazer.API
       dockerfile: Dockerfile
     ports:
-      - "5002:5002"
+      - "5002:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - DOTNET_PRINT_TELEMETRY_MESSAGE=false
+      - idsrv_hostname=http://localhost:5000
   erazer.sso.web:
     image: erazerbrecht/erazersso-web
     build:
       context: ../Erazer.Web
       dockerfile: Dockerfile
+    network_mode: host
+    restart: always
     depends_on:
       - "erazer.sso.identityserver"
       - "redis"
     ports:
       - "8888:8888"
     environment:
-      - host=10.0.75.1
+      - host=http://localhost:8888
+      - idsrv=http://localhost:5000
+      - api=http://localhost:5002
+      - redis=redis://localhost:6379
       - NODE_ENV=production
   redis:
     container_name: redis
     image: redis
     ports:
-      - "6380:6379"
+      - "6379:6379"

@@ -1,5 +1,6 @@
 import { Injectable, isDevMode } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -12,17 +13,13 @@ export class InitialAuthService {
 
     public initAuth(): Promise<any> {
         if (isDevMode()) {
-            return this.initDev();
+            return Promise.resolve();
         }
         return this.initProd();
     }
 
     public getKey() {
         return this._key;
-    }
-
-    private async initDev() {
-        console.log('TODO');
     }
 
     private async initProd(): Promise<any> {
