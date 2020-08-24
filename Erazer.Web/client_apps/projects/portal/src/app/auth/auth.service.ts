@@ -23,8 +23,7 @@ export class InitialAuthService {
     }
 
     private async initProd(): Promise<any> {
-        // Dispatch to store in non PoC
-        this._key = await window.crypto.subtle.generateKey(
+        const key = await window.crypto.subtle.generateKey(
             {
                 name: "RSA-PSS",
                 modulusLength: 4096,
@@ -35,7 +34,7 @@ export class InitialAuthService {
             ["sign"]
         );
 
-        const jwk = await window.crypto.subtle.exportKey('jwk', this._key.publicKey);
+        const jwk = await window.crypto.subtle.exportKey('jwk', key.publicKey);
 
         try {
             var result = await fetch('/auth/key', {
@@ -50,6 +49,10 @@ export class InitialAuthService {
             if (!result.ok) {
                 throw new Error();
             }
+
+            // Dispatch to store (NgRx / NGXS / ...) in non PoC
+            this._key = key;
+
         } catch (err) {
             console.error('Something went wrong providing public key to BFF');
             window.location.href = "/auth/login";
