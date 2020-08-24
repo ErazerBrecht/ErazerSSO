@@ -108,7 +108,7 @@ module.exports = async (app) => {
             fn(req, res, next);
     });
 
-    
+
     if (localLoginEnabled) {
         app.use('*', (req, res, next) => {
             // TODO Convert localLoginEnabled in string array of allowed local host
@@ -155,7 +155,7 @@ module.exports = async (app) => {
 
                 const userInfo = await client.userinfo(access_token);
 
-                req.session.user = Object.assign(userInfo , { isLocal: true, access_token });
+                req.session.user = Object.assign(userInfo, { isLocal: true, access_token });
                 req.session.cookie.maxAge = 14 * 24 * 3600 * 1000;
                 res.sendStatus(200);
             } catch (err) {
@@ -185,42 +185,85 @@ module.exports = async (app) => {
     });
 
     app.post('/auth/key', csrf(), async (req, res) => {
-        if (!req.user) {
+        // Signed in?
+        if (req.user) {
+            // Is this request coming from the same IP / user agent as when the session is created
+            if (req.user.ip === req.ip && req.user.userAgent === req.get('User-Agent')) {
+                // This seassion isn't already binded with another public key?
+                if (!req.user.publicKey) {
+                    const epoch = req.headers["x-epoch"];
+                    const signature = req.headers["x-signature"];
+
+                    // Argument check
+                    if (epoch && signature) {
+
+                        // Epoch check
+                        const epochNumber = +epoch;
+                        const now = Date.now();
+                        if (epochNumber >= now - 5000 && epochNumber <= now + 5000) {
+
+                            const body = (req.body || {});
+                            const publicKey = body.publicKey;
+
+                            // Import key
+                            try {
+                                const key = await crypto.subtle.importKey(
+                                    "jwk",
+                                    publicKey,
+                                    {
+                                        name: "RSA-PSS",
+                                        modulusLength: 4096,
+                                        publicExponent: new Uint8Array([1, 0, 1]),
+                                        hash: "SHA-256"
+                                    },
+                                    false,
+                                    ["verify"]);
+
+                                // Sign check
+                                try {
+                                    const decodedSignature = new Uint8Array(Buffer.from(signature, 'base64'));
+                                    const plain = epoch + req.originalUrl.toLowerCase() + JSON.stringify(body);
+                                    const encoded = new TextEncoder().encode(plain);
+                                    const result = await crypto.subtle.verify(
+                                        {
+                                            name: "RSA-PSS",
+                                            saltLength: 32,
+                                            hash: {
+                                                name: "SHA-256"
+                                            }
+                                        },
+                                        key,
+                                        decodedSignature,
+                                        encoded
+                                    );
+
+                                    if (result === true) {
+                                        req.user.publicKey = publicKey;
+                                        return res.sendStatus(204);
+                                    }
+
+                                    throw new Error('Sign check failed');
+                                }
+                                catch (e) {
+                                    return res.status(400).json({ error: 'Invalid signature' });
+                                }
+                            }
+                            catch (e) {
+                                return res.status(400).json({ error: 'Incorrect public key format' });
+                            }
+                        }
+                    }
+                    return res.status(400).json({ error: 'Bad request' });
+                } else {
+                    return res.status(403).json({ error: 'Already provided a public key in this session' });
+                }
+            }
+            else {
+                return res.status(401).json({ error: 'Incorrect session parameters' });
+            }
+        }
+        else {
             return res.status(401).json({ error: 'Not signed in' });
-        }
-
-        if (req.user.ip !== req.ip || req.user.userAgent !== req.get('User-Agent')) {
-            return res.status(401).json({ error: 'Incorrect session parameters' });
-        }
-
-        if (req.user.publicKey) {
-            return res.status(403).json({ error: 'Already provided a public key in this session' });
-        }
-
-        const publicKey = (req.body || {}).publicKey;
-
-        if (!publicKey) {
-            return res.status(400).json({ error: 'Missing public key' });
-        }
-
-        try {
-            await crypto.subtle.importKey(
-                "jwk",
-                publicKey,
-                {
-                    name: "RSA-PSS",
-                    modulusLength: 4096,
-                    publicExponent: new Uint8Array([1, 0, 1]),
-                    hash: "SHA-256"
-                },
-                false,
-                ["verify"]);
-
-            req.user.publicKey = publicKey;
-            res.sendStatus(204);
-        }
-        catch (e) {
-            return res.status(400).json({ error: 'Incorrect public key format' });
         }
     });
 }

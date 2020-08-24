@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 @Injectable({
     providedIn: 'root'
 })
-export class InitialAuthService {
+export class AuthService {
 
     private _key: CryptoKeyPair | undefined;
 
@@ -18,8 +18,28 @@ export class InitialAuthService {
         return this.initProd();
     }
 
-    public getKey() {
-        return this._key;
+    public async calculateSign(plain: string) {
+        if (this._key === undefined)
+            throw new Error("Key is not initiliazed yet!");
+
+        const result = await this.calculateSignWithKey(this._key.privateKey, plain);
+        return result;
+    }
+
+
+    private async calculateSignWithKey(key: CryptoKey, plain: string) {
+        const encoded = new TextEncoder().encode(plain);
+        const signature = await window.crypto.subtle.sign(
+            {
+                name: "RSA-PSS",
+                saltLength: 32,
+            },
+            key,
+            encoded
+        );
+
+        const signBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+        return signBase64;
     }
 
     private async initProd(): Promise<any> {
@@ -37,13 +57,21 @@ export class InitialAuthService {
         const jwk = await window.crypto.subtle.exportKey('jwk', key.publicKey);
 
         try {
-            var result = await fetch('/auth/key', {
+            const epoch = Date.now().toString();
+            const endpoint = "/auth/key";
+            const body = JSON.stringify({ publicKey: jwk });
+
+            const signature = await this.calculateSignWithKey(key.privateKey, epoch + endpoint + body);
+
+            var result = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-XSRF-Token': this.cookieService.get('XSRF-TOKEN')
+                    'X-XSRF-Token': this.cookieService.get('XSRF-TOKEN'),
+                    'X-Epoch': epoch,
+                    'X-Signature': signature
                 },
-                body: JSON.stringify({ publicKey: jwk })
+                body: body
             });
 
             if (!result.ok) {

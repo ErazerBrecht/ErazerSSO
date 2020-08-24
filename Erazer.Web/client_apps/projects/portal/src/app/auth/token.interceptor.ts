@@ -2,13 +2,13 @@ import { Injectable, isDevMode } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpInterceptor, HttpErrorResponse, HttpEvent } from '@angular/common/http';
 import { Observable, throwError, of, from } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { InitialAuthService } from './auth.service';
+import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-    constructor(private authService: InitialAuthService) { }
+    constructor(private authService: AuthService) { }
 
     async addSign(req: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
         if (isDevMode()) {
@@ -16,34 +16,24 @@ export class TokenInterceptor implements HttpInterceptor {
             return next.handle(newReq).toPromise();
         }
         else {
-            const privateKey = this.authService.getKey()?.privateKey;
+            try {
+                const epoch = Date.now().toString();
+                const url = new URL(req.urlWithParams);
+                const path = url.pathname.toLowerCase();
+                const search = url.search.toLowerCase();
 
-            if (!privateKey)
+                let plain = epoch + path;
+                if (search) {
+                    plain = plain + search;
+                }
+
+                const signature = await this.authService.calculateSign(plain);
+                const newReq = req.clone({ setHeaders: { "X-Epoch": epoch, "X-Signature": signature } });
+                return next.handle(newReq).toPromise();
+            } catch (e) {
+                console.error("Something went wrong while intercepting a request", e);
                 return next.handle(req).toPromise();
-
-            const epoch = Date.now().toString();
-            const url = new URL(req.urlWithParams);
-            const path = url.pathname.toLowerCase();
-            const search = url.search.toLowerCase();
-        
-            let plain = epoch + path;
-            if (search) {
-                plain = plain + search;
             }
-
-            const encoded = new TextEncoder().encode(plain);
-            const signature = await window.crypto.subtle.sign(
-                {
-                    name: "RSA-PSS",
-                    saltLength: 32,
-                },
-                privateKey,
-                encoded
-            );
-
-            const signBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
-            const newReq = req.clone({ setHeaders: { "X-Epoch": epoch, "X-Signature": signBase64 } });
-            return next.handle(newReq).toPromise();
         }
     }
 
