@@ -44,7 +44,8 @@ module.exports = (apiUrl) => {
                         ["verify"]);
 
                     const decodedSignature = new Uint8Array(Buffer.from(signature, 'base64'));
-                    const encoded = new TextEncoder().encode(epoch);
+                    const plain = epoch + req.originalUrl.toLowerCase();
+                    const encoded = new TextEncoder().encode(plain);
                     const result = await crypto.subtle.verify(
                         {
                             name: "RSA-PSS",

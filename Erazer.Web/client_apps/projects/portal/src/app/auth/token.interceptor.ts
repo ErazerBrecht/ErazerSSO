@@ -22,7 +22,16 @@ export class TokenInterceptor implements HttpInterceptor {
                 return next.handle(req).toPromise();
 
             const epoch = Date.now().toString();
-            const encoded = new TextEncoder().encode(epoch);
+            const url = new URL(req.urlWithParams);
+            const path = url.pathname.toLowerCase();
+            const search = url.search.toLowerCase();
+        
+            let plain = epoch + path;
+            if (search) {
+                plain = plain + search;
+            }
+
+            const encoded = new TextEncoder().encode(plain);
             const signature = await window.crypto.subtle.sign(
                 {
                     name: "RSA-PSS",
