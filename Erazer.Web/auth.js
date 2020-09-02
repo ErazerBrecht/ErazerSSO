@@ -54,8 +54,8 @@ module.exports = async (app) => {
     app.use(session({
         store: new redisStore({ client: redisClient }),
         secret: '8tJbS2kGdzFCLHtMujnkM94fPA7A9t33MqAcJCMbapmTLPVcDJ86WJr9kBHCFQ3FbV2p',
-        cookie: { sameSite: 'Lax', secure: isSecure },
-        name: 'Erazer.Web',
+        cookie: { sameSite: 'Lax', secure: isSecure, httpOnly: true },
+        name: isSecure ? '__Host-Erazer.Web' : 'Erazer.Web',
         resave: false,
         saveUninitialized: false,
 
@@ -189,7 +189,8 @@ module.exports = async (app) => {
         if (req.user) {
             // Is this request coming from the same IP / user agent as when the session is created
             if (req.user.ip === req.ip && req.user.userAgent === req.get('User-Agent')) {
-                // This seassion isn't already binded with another public key?
+                
+                // This session isn't already binded with another public key?
                 if (!req.user.publicKey) {
                     const epoch = req.headers["x-epoch"];
                     const signature = req.headers["x-signature"];
