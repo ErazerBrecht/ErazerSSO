@@ -1,4 +1,9 @@
-export const environment = {
+import { IEnvironment } from "./ienvironment";
+
+export const environment: IEnvironment = {
   production: true,
-  host: '10.0.75.1'
+  api: 'http://localhost:5002/api',
+  idsrv: 'http://localhost:5000',
+  //api: 'https://api.erazerbrecht.me/api',
+  //idsrv: 'https://login.erazerbrecht.me',
 };

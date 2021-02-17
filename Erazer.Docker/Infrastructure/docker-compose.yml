@@ -7,6 +7,31 @@ services:
     volumes:
       - redis-data:/data
     ports:
-      - 6380:6379
+      - 6379:6379
+  mongo-1:
+    image: mongo:4
+    container_name: mongo-1
+    volumes:
+      - mongo-1-data:/data/db
+      - /etc/mongod.conf:/etc/mongod.conf
+    ports:
+      - 3000:3000
+    command: ["mongod", "--replSet", "rs0", "--port", "3000"]
+  mongo-2:
+    image: mongo:4
+    container_name: mongo-2
+    volumes:
+      - mongo-2-data:/data/db
+      - ./etc/mongod.conf:/etc/mongod.conf
+    ports:
+      - 3001:3001
+    command: ["mongod",  "--replSet", "rs0", "--port", "3001"]
+  mongo-rs:
+    build: ./etc/setup
+    depends_on:
+      - "mongo-1"
+      - "mongo-2"
 volumes:
   redis-data:
+  mongo-1-data:
+  mongo-2-data:

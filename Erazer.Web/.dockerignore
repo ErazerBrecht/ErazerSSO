@@ -9,5 +9,4 @@ docker-compose.*.yml
 */bin
 */obj
 /node_modules
-/client_apps/portal/node_modules
-/client_apps/landing/node_modules
+/client_apps/node_modules

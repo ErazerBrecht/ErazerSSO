@@ -13,15 +13,8 @@ namespace IdentityServer4.Quickstart.UI
         public static TimeSpan RememberMeLoginDuration = TimeSpan.FromDays(30);
 
         public static bool ShowLogoutPrompt = true;
-        public static bool AutomaticRedirectAfterSignOut = true;
-
-        // to enable windows authentication, the host (IIS or IIS Express) also must have 
-        // windows auth enabled.
-        public static bool WindowsAuthenticationEnabled = false;
-        public static bool IncludeWindowsGroups = false;
-        // specify the Windows authentication scheme and display name
-        public static readonly string WindowsAuthenticationSchemeName = "Windows";
-
+        public static bool AutomaticRedirectAfterSignOut = false;
+        
         public static string InvalidCredentialsErrorMessage = "Invalid username or password";
     }
 }

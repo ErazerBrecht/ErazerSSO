@@ -5,20 +5,20 @@ import { AppComponent } from './app.component';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { AppRoutingModule } from './routing/app-routing.module';
-import { AppLoadModule } from './app-load/app-load.module';
 import { HomeService } from './home/home.service';
 import { AuthModule } from './auth/auth.module';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AboutComponent,
-    HomeComponent
+    HomeComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AppLoadModule,
     AuthModule
   ],
   providers: [HomeService],

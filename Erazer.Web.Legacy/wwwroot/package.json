@@ -7,13 +7,13 @@
     "rimraf": "^2.5.2"
   },
   "scripts": {
-	"preclean": "rimraf dist/*",
-	"copy-favicon": "copyfiles favicon.ico dist/",
-	"build-landing": "cd landing & npm run build",
-	"publish-landing": "cd landing & npm run publish",
-	"build-portal": "cd portal & npm run build",
-	"publish-portal": "cd portal & npm run publish ",
-	"build": "npm install & npm run preclean & npm run copy-favicon & npm run build-landing & npm run build-portal",
-	"publish": "npm install & npm run preclean & npm run copy-favicon & npm run publish-landing & npm run publish-portal"
+    "preclean": "rimraf dist/*",
+    "copy-favicon": "copyfiles favicon.ico dist/",
+    "build-landing": "cd landing & npm run build",
+    "publish-landing": "cd landing & npm run publish",
+    "build-portal": "cd portal & npm run build",
+    "publish-portal": "cd portal & npm run publish ",
+    "build": "npm install & npm run preclean & npm run copy-favicon & npm run build-landing & npm run build-portal",
+    "publish": "npm install & npm run preclean & npm run copy-favicon & npm run publish-landing & npm run publish-portal"
   }
 }

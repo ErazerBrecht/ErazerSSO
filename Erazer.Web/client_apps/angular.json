@@ -8,11 +8,16 @@
       "sourceRoot": "projects/portal/src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "../wwwroot/portal",
             "index": "projects/portal/src/index.html",
             "main": "projects/portal/src/main.ts",
@@ -28,7 +33,8 @@
                 "glob": "**/*",
                 "input": "projects/portal/src/assets",
                 "output": "/assets"
-              }
+              },
+              "projects/portal/src/silent-refresh.html"
             ],
             "styles": [
               "projects/portal/src/styles.css"
@@ -37,6 +43,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "projects/portal/src/environments/environment.ts",
@@ -170,7 +182,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": false,
-              "vendorChunk": false,
               "fileReplacements": [
                 {
                   "replace": "projects/landing/src/environments/environment.ts",

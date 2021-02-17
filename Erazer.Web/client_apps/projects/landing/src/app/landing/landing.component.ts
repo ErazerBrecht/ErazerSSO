@@ -7,13 +7,10 @@ import { Observable } from 'rxjs';
     templateUrl: './landing.component.html',
     styleUrls: ['./landing.component.scss']
 })
-
-export class LandingComponent implements OnInit {
+export class LandingComponent {
   motd$: Observable<string>;
 
-  constructor(private service: LandingService) { }
-
-  ngOnInit() {
+  constructor(private service: LandingService) { 
     this.motd$ = this.service.getMotd();
   }
 }

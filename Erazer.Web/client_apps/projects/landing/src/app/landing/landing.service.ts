@@ -3,12 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs'; 
 import { environment } from '../../environments/environment';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class LandingService {
   private baseUrl: string;
 
   constructor(private http: HttpClient) {
-    this.baseUrl = `http://${environment.host}:5002/api`;
+    this.baseUrl = `${environment.host}/api`;
    }
 
   getMotd(): Observable<string> {

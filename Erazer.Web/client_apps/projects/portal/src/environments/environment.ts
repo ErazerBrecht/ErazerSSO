@@ -3,14 +3,17 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+import { IEnvironment } from "./ienvironment";
+
 // IMPORTANT: In a real environment the secret values (password & client_secret) would be loaded by dotenv or something similiar!!
 // They shouldn't be commited into vcs!!
-export const environment = {
+export const environment: IEnvironment = {
   production: false, 
-  host: 'localhost',
+  api: 'http://localhost:5002/api',
+  idsrv: 'http://localhost:5000',
   username: 'alice',                
   password: 'alice',                
-  client_id: 'nodejs_dev',
+  client_id: 'angular_dev',
   client_secret: '425A4639-4079-49E1-9F86-E832F246F5FB'
 };
 

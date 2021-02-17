@@ -1,8 +1,9 @@
-export class ResultModel {
+
+export interface IResultDto {
     id: string;
     subject: string;
     score: string;
-    remark: string;
+    remarks: string;
     credits: number;
     added: Date;
 }
