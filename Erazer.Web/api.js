@@ -7,6 +7,7 @@ module.exports = (apiUrl) => {
         if (authenticated) {
             return proxy(apiUrl, {
                 proxyReqOptDecorator: function (proxyReqOpts, srcReq) {
+                    proxyReqOpts.rejectUnauthorized = false;
                     if (req.user) {
                         proxyReqOpts.headers = { "Authorization": `Bearer ${req.user.access_token}` };
                     }

@@ -10,6 +10,8 @@ const crypto = require('@trust/webcrypto');
 const csrf = require('csurf');
 const fetch = require('node-fetch');
 
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 // Initialize passport/auth settings
 module.exports = async (app) => {
     const config = app.get('config');

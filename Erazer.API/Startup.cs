@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace Erazer.API
@@ -34,9 +35,21 @@ namespace Erazer.API
                 {
                     options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5);
                     options.Authority = _configuration["idsrv_hostname"];
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false
+                    };
                     options.RequireHttpsMetadata = _configuration["idsrv_hostname"].StartsWith("https");
-                    options.Audience = "api";
                 });
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiScope", policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "api");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +77,11 @@ namespace Erazer.API
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers()
+                    .RequireAuthorization("ApiScope");
+            });
         }
     }
 }

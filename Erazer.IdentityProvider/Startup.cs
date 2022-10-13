@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using IdentityServer4;
-using IdentityServer4.Quickstart.UI;
-using IdentityServer4.Services;
+using IdentityServerHost.Quickstart.UI;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -46,7 +45,7 @@ namespace Erazer.IdentityProvider
             });
 
             builder.AddInMemoryIdentityResources(Config.GetIdentityResources());
-            builder.AddInMemoryApiResources(Config.GetApis());
+            builder.AddInMemoryApiScopes(Config.GetApis());
             builder.AddInMemoryClients(Config.GetClients(Configuration));
             builder.AddTestUsers(TestUsers.Users);
             builder.AddInMemoryPersistedGrants();

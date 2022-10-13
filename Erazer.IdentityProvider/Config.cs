@@ -23,11 +23,11 @@ namespace Erazer.IdentityProvider
             };
         }
 
-        public static IEnumerable<ApiResource> GetApis()
+        public static IEnumerable<ApiScope> GetApis()
         {
-            return new ApiResource[]
+            return new ApiScope[]
             {
-                new ApiResource("api", "API access", new List<string> {JwtClaimTypes.Role})
+                new ApiScope("api", "API access", new List<string> {JwtClaimTypes.Role})
             };
         }
 
