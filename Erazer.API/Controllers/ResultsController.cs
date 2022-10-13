@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Erazer.API.Controllers
 {
-    [Authorize]
+    [Authorize("ApiScope")]
     [Route("[controller]")]
     public class ResultsController : Controller
     {

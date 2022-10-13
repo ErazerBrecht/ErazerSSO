@@ -1,5 +1,5 @@
 ## Ignore production front-end folders
-dist/
+Erazer.Web/dist/
 Erazer.Web/wwwroot/
 
 ## Ignore log file
